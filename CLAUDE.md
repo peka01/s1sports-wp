@@ -7,6 +7,7 @@ Read `AGENTS.md` before changing code; its rules apply here too.
 ## Repo
 
 - Fork of github.com/maxloman97/s1sports-wp. `origin` is the fork (peka01/s1sports-wp), `upstream` is Max's original.
+- The fork is Per's own. Commit and push straight to `main` on `origin`: no feature branches, no pull requests. Never push to `upstream`.
 - `s1sports-theme/` is the active theme, `s1sports-content/` the content plugin. Nothing deploys automatically: a change reaches the site only when the theme or plugin is uploaded to WordPress.
 - `scripts/wp.mjs` is a REST API client for the live site. Credentials live in `.env` in the repo root (an Application Password, admin rights). `.env` is gitignored; never print, commit or copy its contents.
 
