@@ -32,6 +32,16 @@ Allt i den här delen redigeras i wp-admin.
 
 Engelska versioner skapas som WPML-översättningar av event och sidor. `wpml-config.xml` i temat och insticksprogrammet anger vilka fält som översätts och vilka som kopieras (sport, datum, bilder).
 
+## Översättning (engelska på s1sports.co)
+
+Engelska sidor visar bara engelska event och engelska Development-sidor. Allt nytt behöver därför översättas i WPML.
+
+1. **WPML → Inställningar → Översättning av inläggstyper:** kontrollera att **Event** är översättningsbar. `wpml-config.xml` i insticksprogrammet ställer in det.
+2. **WPML → Inställningar → Synkronisering av inlägg och sidor:** se till att sidmallen kopieras, så att engelska Development-sidor får mallen **Development (sport)**.
+3. **Översätt varje Development-sida och varje event.** Sport, datum, coach och bilder kopieras automatiskt från den svenska versionen; texterna översätts. Fältgrupperna står i ACF Multilinguals läge **Expert**, och koden anger för varje fält om det översätts eller kopieras (samma som `wpml-config.xml`).
+4. **Utkast fungerar per språk.** En engelsk sida eller ett engelskt event syns först när den engelska versionen är publicerad.
+5. **Kör kontrollen efter uppladdning:** `node scripts/check-live.mjs` läser båda domänerna och visar om något är fel (språk, meny, språkväxlare, Development-sidor och kort).
+
 ## Kvar innan skarp installation
 
 - Jämför samtliga 18 sidversioner vid dator- och mobilbredd och rätta varje skillnad.

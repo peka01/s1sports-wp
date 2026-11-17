@@ -25,7 +25,9 @@ WordPress Playground runs the theme and plugin locally with sample content (`dev
 
     MSYS_NO_PATHCONV=1 npx -y @wp-playground/cli@latest server --port=9400 --login --blueprint=dev/blueprint.json --mount-dir s1sports-theme /wordpress/wp-content/themes/s1sports-theme --mount-dir s1sports-content /wordpress/wp-content/plugins/s1sports-content --mount-dir dev /wordpress/wp-content/s1-dev --mount-dir dev/mu-plugins/s1-dev-autologin.php /wordpress/wp-content/mu-plugins/s1-dev-autologin.php
 
-`MSYS_NO_PATHCONV=1` stops Git Bash from rewriting the `/wordpress/...` paths. `dev/mu-plugins/s1-dev-autologin.php` signs the local browser in as admin; it is only mounted into Playground and must never be uploaded to the live site. WPML is not available locally, so only Swedish is tested there.
+`MSYS_NO_PATHCONV=1` stops Git Bash from rewriting the `/wordpress/...` paths. `dev/mu-plugins/s1-dev-autologin.php` signs the local browser in as admin; it is only mounted into Playground and must never be uploaded to the live site. WPML is not available locally. `dev/mu-plugins/s1-dev-wpml-mock.php` (mounted the same way) stands in for the WPML language filters: add `?lang=en` to a URL to render it in English. It does not filter content by language. Add `--mount-dir dev/mu-plugins/s1-dev-wpml-mock.php /wordpress/wp-content/mu-plugins/s1-dev-wpml-mock.php` to the command above.
+
+After uploading to the live site, run `node scripts/check-live.mjs`: a read-only check of all pages on both domains (language, theme version, dropdown, language switcher, spelling, Development pages, sport cards, plugin version).
 
 ## Rules
 

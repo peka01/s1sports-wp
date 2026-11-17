@@ -69,7 +69,9 @@ add_action('acf/init', function (): void {
     acf_add_local_field_group([
         'key' => 'group_s1_event',
         'title' => 'Eventet',
-        'fields' => [
+        // ACF Multilingual "Expert" mode: each field says whether it is translated or copied (see s1_wpml_field_prefs).
+        'acfml_field_group_mode' => 'advanced',
+        'fields' => s1_wpml_field_prefs([
             ['key' => 'field_s1_event_tab_card', 'label' => '1. Kortet', 'type' => 'tab'],
             ['key' => 'field_s1_event_card_help', 'label' => '', 'type' => 'message',
                 'message' => 'Det här visas på eventkortet i listan. Eventets namn skriver du i titelfältet ovanför.'],
@@ -110,7 +112,7 @@ add_action('acf/init', function (): void {
             ['key' => 'field_s1_event_tab_after', 'label' => '4. Efter eventet', 'type' => 'tab'],
             ['key' => 'field_s1_event_result', 'label' => 'Resultat och höjdpunkter', 'name' => 's1_event_result', 'rows' => 5,
                 'instructions' => 'Visas i rutan när eventet är genomfört. Lägg gärna till bilder från eventet under fliken Bilder.'] + $text,
-        ],
+        ], ['s1_event_sport', 's1_event_start', 's1_event_end', 's1_event_coach', 's1_event_image', 's1_event_gallery']),
         'location' => [[['param' => 'post_type', 'operator' => '==', 'value' => 's1_event']]],
         'position' => 'acf_after_title',
         'style' => 'default',
@@ -119,6 +121,19 @@ add_action('acf/init', function (): void {
         'active' => true,
     ]);
 });
+
+/**
+ * Translation setting per field for WPML / ACF Multilingual: the fields in $copy are copied
+ * from Swedish to the English translation (dates, sport, images, names), all other text is
+ * translated. Matches wpml-config.xml. Ignored when WPML is not installed.
+ */
+function s1_wpml_field_prefs(array $fields, array $copy): array {
+    foreach ($fields as &$field) {
+        if (empty($field['name'])) continue;
+        $field['wpml_cf_preferences'] = in_array($field['name'], $copy, true) ? 1 : 2;
+    }
+    return $fields;
+}
 
 /** Events made before the form had its own image field used the featured image: show it in the field until saved. */
 add_filter('acf/load_value/key=field_s1_event_image', function ($value, $post_id) {

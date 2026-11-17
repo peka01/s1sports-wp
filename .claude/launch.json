@@ -12,7 +12,8 @@
         "--mount-dir", "s1sports-theme", "/wordpress/wp-content/themes/s1sports-theme",
         "--mount-dir", "s1sports-content", "/wordpress/wp-content/plugins/s1sports-content",
         "--mount-dir", "dev", "/wordpress/wp-content/s1-dev",
-        "--mount-dir", "dev/mu-plugins/s1-dev-autologin.php", "/wordpress/wp-content/mu-plugins/s1-dev-autologin.php"
+        "--mount-dir", "dev/mu-plugins/s1-dev-autologin.php", "/wordpress/wp-content/mu-plugins/s1-dev-autologin.php",
+        "--mount-dir", "dev/mu-plugins/s1-dev-wpml-mock.php", "/wordpress/wp-content/mu-plugins/s1-dev-wpml-mock.php"
       ],
       "port": 9400
     }

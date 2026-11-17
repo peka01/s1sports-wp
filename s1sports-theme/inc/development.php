@@ -49,7 +49,8 @@ add_action('acf/init', function (): void {
     acf_add_local_field_group([
         'key' => 'group_s1_development_page',
         'title' => 'Sidans innehåll',
-        'fields' => [
+        'acfml_field_group_mode' => 'advanced',
+        'fields' => s1d_wpml_field_prefs([
             ['key' => 'field_s1_dev_tab_top', 'label' => '1. Toppen', 'type' => 'tab'],
             ['key' => 'field_s1_dev_hero_image', 'label' => 'Toppbild', 'name' => 's1_dev_hero_image', 'instructions' => 'Stor bild överst på sidan, bakom rubriken.'] + $image,
             ['key' => 'field_s1_dev_heading_bold', 'label' => 'Rubrik – fet del', 'name' => 's1_dev_heading_bold', 'type' => 'text', 'placeholder' => 'Development', 'wrapper' => $half],
@@ -81,7 +82,7 @@ add_action('acf/init', function (): void {
             ['key' => 'field_s1_card_title', 'label' => 'Stor rubrik', 'name' => 's1_card_title', 'type' => 'text', 'placeholder' => 'Golf', 'wrapper' => $half],
             ['key' => 'field_s1_card_text', 'label' => 'Text', 'name' => 's1_card_text', 'type' => 'textarea', 'rows' => 2, 'new_lines' => '',
                 'placeholder' => 'Träningsläger, tävlingar och college showcases med S1-coach.'],
-        ],
+        ], ['s1_dev_sport', 's1_dev_hero_image', 's1_dev_cta_image', 's1_card_image']),
         'location' => [[['param' => 'page_template', 'operator' => '==', 'value' => S1_DEV_TEMPLATE]]],
         'position' => 'acf_after_title',
         'style' => 'default',
@@ -95,14 +96,15 @@ add_action('acf/init', function (): void {
         acf_add_local_field_group([
             'key' => 'group_s1_junior_sports',
             'title' => 'Golf och Tennis på Juniorutveckling',
-            'fields' => [
+            'acfml_field_group_mode' => 'advanced',
+            'fields' => s1d_wpml_field_prefs([
                 ['key' => 'field_s1_jr_help', 'label' => 'Om sektionen', 'type' => 'message',
                     'message' => 'Sektionen under sidans toppbild visar ett kort för varje publicerad sida med mallen "Development (sport)". Kortens bild och text redigeras på respektive Development-sida.'],
                 ['key' => 'field_s1_jr_heading_bold', 'label' => 'Rubrik, fet del', 'name' => 's1_jr_heading_bold', 'type' => 'text', 'placeholder' => 'Junior Development', 'wrapper' => $half],
                 ['key' => 'field_s1_jr_heading_italic', 'label' => 'Rubrik, kursiv del', 'name' => 's1_jr_heading_italic', 'type' => 'text', 'placeholder' => 'camps & event', 'wrapper' => $half],
                 ['key' => 'field_s1_jr_intro', 'label' => 'Text', 'name' => 's1_jr_intro', 'type' => 'textarea', 'rows' => 2, 'new_lines' => '',
                     'placeholder' => 'Följ våra kommande läger och tävlingsresor, och se vad vi har gjort tidigare. Välj din sport.'],
-            ],
+            ], []),
             'location' => $junior_locations,
             'position' => 'normal',
             'style' => 'default',
@@ -159,6 +161,18 @@ add_filter('acf/load_value/key=field_s1_dev_intro', function ($value, $post_id) 
     $content = trim(wp_strip_all_tags((string) get_post_field('post_content', (int) $post_id)));
     return $content !== '' ? $content : $value;
 }, 10, 2);
+
+/**
+ * Translation setting per field for WPML / ACF Multilingual: fields in $copy (sport, images)
+ * are copied to the English translation, all other text is translated. Matches wpml-config.xml.
+ */
+function s1d_wpml_field_prefs(array $fields, array $copy): array {
+    foreach ($fields as &$field) {
+        if (empty($field['name'])) continue;
+        $field['wpml_cf_preferences'] = in_array($field['name'], $copy, true) ? 1 : 2;
+    }
+    return $fields;
+}
 
 function s1d_icon(string $name, int $size = 18): string {
     $paths = [
@@ -377,7 +391,7 @@ function s1_development_event_card(array $event): string {
     $cover = (int) ($event['image_id'] ?: ($event['gallery'][0] ?? 0));
     $media = $cover > 0
         ? '<div class="s1d-card__media">' . s1d_image($cover, 's1d-card__img', '(max-width: 767px) 100vw, 340px')
-            . ($photos > 0 ? '<span class="s1d-card__photos">' . s1d_icon('camera', 16) . esc_html(sprintf(s1_text('%d bilder', '%d photos'), $photos)) . '</span>' : '')
+            . ($photos > 0 ? '<span class="s1d-card__photos">' . s1d_icon('camera', 16) . esc_html($photos === 1 ? s1_text('1 bild', '1 photo') : sprintf(s1_text('%d bilder', '%d photos'), $photos)) . '</span>' : '')
             . '</div>'
         : '';
     $meta = '';
