@@ -72,16 +72,16 @@ add_action('acf/init', function (): void {
         // ACF Multilingual "Expert" mode: each field says whether it is translated or copied (see s1_wpml_field_prefs).
         'acfml_field_group_mode' => 'advanced',
         'fields' => s1_wpml_field_prefs([
-            ['key' => 'field_s1_event_tab_card', 'label' => '1. Kortet', 'type' => 'tab'],
+            ['key' => 'field_s1_event_tab_card', 'label' => '1. Listan', 'type' => 'tab'],
             ['key' => 'field_s1_event_card_help', 'label' => '', 'type' => 'message',
-                'message' => 'Det här visas på eventkortet i listan. Eventets namn skriver du i titelfältet ovanför.'],
+                'message' => 'Det här visas på eventets rad i listan. Eventets namn skriver du i titelfältet ovanför.'],
             ['key' => 'field_s1_event_sport', 'label' => 'Sport', 'name' => 's1_event_sport', 'type' => 'select', 'required' => 1,
                 'instructions' => 'Eventet visas på Development Golf eller Development Tennis.',
                 'choices' => s1_event_sports(), 'default_value' => 'tennis', 'return_format' => 'value', 'wrapper' => $half],
             ['key' => 'field_s1_event_series', 'label' => 'Typ av event', 'name' => 's1_event_series', 'type' => 'text',
                 'instructions' => 'Liten text ovanför namnet.', 'placeholder' => 'ITF Junior · U18', 'wrapper' => $half],
             ['key' => 'field_s1_event_image', 'label' => 'Eventbild', 'name' => 's1_event_image', 'type' => 'image',
-                'instructions' => 'Överst på kortet och i rutan. Lämna tomt för att använda första bilden under fliken Bilder.',
+                'instructions' => 'Till höger på raden i listan och överst i rutan. Lämna tomt för att använda första bilden under fliken Bilder.',
                 'return_format' => 'id', 'preview_size' => 'medium', 'library' => 'all'],
             ['key' => 'field_s1_event_start', 'label' => 'Startdatum', 'name' => 's1_event_start', 'required' => 1] + $date,
             ['key' => 'field_s1_event_end', 'label' => 'Slutdatum', 'name' => 's1_event_end',
@@ -92,7 +92,7 @@ add_action('acf/init', function (): void {
 
             ['key' => 'field_s1_event_tab_box', 'label' => '2. Rutan', 'type' => 'tab'],
             ['key' => 'field_s1_event_box_help', 'label' => '', 'type' => 'message',
-                'message' => 'Rutan öppnas när besökaren klickar på eventet. Den visar också datum och plats från fliken Kortet.'],
+                'message' => 'Rutan öppnas när besökaren klickar på eventet. Den visar också datum och plats från fliken Listan.'],
             ['key' => 'field_s1_event_fee', 'label' => 'Avgift', 'name' => 's1_event_fee', 'type' => 'text', 'placeholder' => '450 kr/dag', 'wrapper' => ['width' => '34']],
             ['key' => 'field_s1_event_age', 'label' => 'Ålder', 'name' => 's1_event_age', 'type' => 'text', 'placeholder' => 'U18', 'wrapper' => ['width' => '33']],
             ['key' => 'field_s1_event_deadline', 'label' => 'Sista anmälan', 'name' => 's1_event_deadline', 'type' => 'text', 'placeholder' => '1 augusti', 'wrapper' => ['width' => '33'],

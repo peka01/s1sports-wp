@@ -8,3 +8,4 @@ wp-config.php
 .env
 .env.*
 wp-content/uploads/
+dist/
