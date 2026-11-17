@@ -74,9 +74,10 @@ foreach ([
 $golf = s1dev_page('Development Golf', 'development-golf', [
     'menu_order' => 1,
     'page_template' => 'template-development.php',
-    'post_content' => 'Träningsläger, tävlingar och college showcases för juniorer som vill ta nästa steg, med S1-coach på plats.',
     'meta_input' => [
         's1_dev_sport' => 'golf',
+        's1_dev_hero_image' => $img['golf_hero'],
+        's1_dev_intro' => 'Träningsläger, tävlingar och college showcases för juniorer som vill ta nästa steg, med S1-coach på plats.',
         's1_dev_heading_bold' => 'Development',
         's1_dev_heading_italic' => 'Golf',
         's1_card_image' => $img['golf_card'],
@@ -87,9 +88,10 @@ $golf = s1dev_page('Development Golf', 'development-golf', [
 $tennis = s1dev_page('Development Tennis', 'development-tennis', [
     'menu_order' => 2,
     'page_template' => 'template-development.php',
-    'post_content' => 'Vi reser med våra juniorer till utvalda ITF-turneringar och arrangerar egna läger, med S1-coach på plats hela vägen.',
     'meta_input' => [
         's1_dev_sport' => 'tennis',
+        's1_dev_hero_image' => $img['tennis_hero'],
+        's1_dev_intro' => 'Vi reser med våra juniorer till utvalda ITF-turneringar och arrangerar egna läger, med S1-coach på plats hela vägen.',
         's1_dev_heading_bold' => 'Development',
         's1_dev_heading_italic' => 'Tennis',
         's1_card_image' => $img['tennis_card'],
@@ -97,8 +99,6 @@ $tennis = s1dev_page('Development Tennis', 'development-tennis', [
         's1_dev_cta_image' => $img['cta'],
     ],
 ]);
-if ($img['golf_hero']) set_post_thumbnail($golf, $img['golf_hero']);
-if ($img['tennis_hero']) set_post_thumbnail($tennis, $img['tennis_hero']);
 
 $events = [
     ['tennis', 'ITF Malmö', 'ITF Junior · U18', '20270309', '20270315', 'Malmö, Sverige', 'Testcoach', '450 kr/dag + coachkostnader', 'U18', '15 februari',

@@ -43,47 +43,50 @@ function s1_junior_page_ids(): array {
 add_action('acf/init', function (): void {
     if (!function_exists('acf_add_local_field_group')) return;
     $half = ['width' => '50'];
+    // The form follows the page from top to bottom; the card on Juniorutveckling comes last
+    // because it is shown on another page. Empty text fields fall back to the grey hint.
+    $image = ['type' => 'image', 'return_format' => 'id', 'preview_size' => 'medium', 'library' => 'all'];
     acf_add_local_field_group([
         'key' => 'group_s1_development_page',
-        'title' => 'Development-sida',
+        'title' => 'Sidans innehåll',
         'fields' => [
-            ['key' => 'field_s1_dev_tab_page', 'label' => 'Sidan', 'type' => 'tab'],
-            ['key' => 'field_s1_dev_help', 'label' => 'Så fungerar sidan', 'type' => 'message', 'new_lines' => 'wpautop',
-                'message' => "Utvald bild visas överst på sidan. Texten i redigeraren ovan visas som ingress under rubriken.\nEventen hämtas automatiskt från menyn Event, för den sport du väljer här."],
+            ['key' => 'field_s1_dev_tab_top', 'label' => '1. Toppen', 'type' => 'tab'],
+            ['key' => 'field_s1_dev_hero_image', 'label' => 'Toppbild', 'name' => 's1_dev_hero_image', 'instructions' => 'Stor bild överst på sidan, bakom rubriken.'] + $image,
+            ['key' => 'field_s1_dev_heading_bold', 'label' => 'Rubrik – fet del', 'name' => 's1_dev_heading_bold', 'type' => 'text', 'placeholder' => 'Development', 'wrapper' => $half],
+            ['key' => 'field_s1_dev_heading_italic', 'label' => 'Rubrik – kursiv del', 'name' => 's1_dev_heading_italic', 'type' => 'text', 'placeholder' => 'Golf', 'wrapper' => $half],
+            ['key' => 'field_s1_dev_intro', 'label' => 'Ingress', 'name' => 's1_dev_intro', 'type' => 'textarea', 'rows' => 3, 'new_lines' => '',
+                'instructions' => 'Text under rubriken. Tom rad ger nytt stycke.'],
+
+            ['key' => 'field_s1_dev_tab_events', 'label' => '2. Event', 'type' => 'tab'],
             ['key' => 'field_s1_dev_sport', 'label' => 'Sport', 'name' => 's1_dev_sport', 'type' => 'select', 'required' => 1,
-                'choices' => s1_dev_sports(), 'return_format' => 'value', 'wrapper' => $half],
-            ['key' => 'field_s1_dev_heading_bold', 'label' => 'Rubrik, fet del', 'name' => 's1_dev_heading_bold', 'type' => 'text',
-                'instructions' => 'Lämna tomt för sidans titel.', 'placeholder' => 'Development', 'wrapper' => $half],
-            ['key' => 'field_s1_dev_heading_italic', 'label' => 'Rubrik, kursiv del', 'name' => 's1_dev_heading_italic', 'type' => 'text',
-                'placeholder' => 'Golf', 'wrapper' => $half],
-            ['key' => 'field_s1_dev_list_bold', 'label' => 'Eventlistans rubrik, fet del', 'name' => 's1_dev_list_bold', 'type' => 'text',
-                'placeholder' => 'Turneringar', 'wrapper' => $half],
-            ['key' => 'field_s1_dev_list_italic', 'label' => 'Eventlistans rubrik, kursiv del', 'name' => 's1_dev_list_italic', 'type' => 'text',
-                'placeholder' => '& läger', 'wrapper' => $half],
+                'instructions' => 'Sidan visar alla publicerade event för den här sporten. Eventen läggs till under menyn Event.',
+                'choices' => s1_dev_sports(), 'return_format' => 'value'],
+            ['key' => 'field_s1_dev_list_bold', 'label' => 'Rubrik ovanför eventen – fet del', 'name' => 's1_dev_list_bold', 'type' => 'text', 'placeholder' => 'Turneringar', 'wrapper' => $half],
+            ['key' => 'field_s1_dev_list_italic', 'label' => 'Rubrik ovanför eventen – kursiv del', 'name' => 's1_dev_list_italic', 'type' => 'text', 'placeholder' => '& läger', 'wrapper' => $half],
 
-            ['key' => 'field_s1_dev_tab_card', 'label' => 'Kort på Juniorutveckling', 'type' => 'tab'],
-            ['key' => 'field_s1_card_image', 'label' => 'Kortbild', 'name' => 's1_card_image', 'type' => 'image',
-                'instructions' => 'Bilden på kortet på Juniorutveckling. Lämna tomt för att använda sidans utvalda bild.',
-                'return_format' => 'id', 'preview_size' => 'medium', 'library' => 'all'],
-            ['key' => 'field_s1_card_label', 'label' => 'Liten rubrik', 'name' => 's1_card_label', 'type' => 'text', 'placeholder' => 'Development', 'wrapper' => $half],
-            ['key' => 'field_s1_card_title', 'label' => 'Kortets rubrik', 'name' => 's1_card_title', 'type' => 'text', 'placeholder' => 'Golf', 'wrapper' => $half],
-            ['key' => 'field_s1_card_text', 'label' => 'Kortets text', 'name' => 's1_card_text', 'type' => 'textarea', 'rows' => 2, 'new_lines' => '',
-                'placeholder' => 'Träningsläger, tävlingar och college showcases med S1-coach.'],
-
-            ['key' => 'field_s1_dev_tab_cta', 'label' => 'Avslutning', 'type' => 'tab'],
-            ['key' => 'field_s1_dev_cta_image', 'label' => 'Bakgrundsbild', 'name' => 's1_dev_cta_image', 'type' => 'image',
-                'instructions' => 'Bilden bakom rutan längst ner på sidan. Lämna tomt för att använda sidans utvalda bild.',
-                'return_format' => 'id', 'preview_size' => 'medium', 'library' => 'all'],
-            ['key' => 'field_s1_dev_cta_bold', 'label' => 'Rubrik, fet del', 'name' => 's1_dev_cta_bold', 'type' => 'text', 'placeholder' => 'Hittar du inte', 'wrapper' => $half],
-            ['key' => 'field_s1_dev_cta_italic', 'label' => 'Rubrik, kursiv del', 'name' => 's1_dev_cta_italic', 'type' => 'text', 'placeholder' => 'rätt event?', 'wrapper' => $half],
+            ['key' => 'field_s1_dev_tab_cta', 'label' => '3. Avslutning', 'type' => 'tab'],
+            ['key' => 'field_s1_dev_cta_image', 'label' => 'Bakgrundsbild', 'name' => 's1_dev_cta_image', 'instructions' => 'Bilden bakom rutan längst ner. Lämna tomt för att använda toppbilden.'] + $image,
+            ['key' => 'field_s1_dev_cta_bold', 'label' => 'Rubrik – fet del', 'name' => 's1_dev_cta_bold', 'type' => 'text', 'placeholder' => 'Hittar du inte', 'wrapper' => $half],
+            ['key' => 'field_s1_dev_cta_italic', 'label' => 'Rubrik – kursiv del', 'name' => 's1_dev_cta_italic', 'type' => 'text', 'placeholder' => 'rätt event?', 'wrapper' => $half],
             ['key' => 'field_s1_dev_cta_text', 'label' => 'Text', 'name' => 's1_dev_cta_text', 'type' => 'textarea', 'rows' => 2, 'new_lines' => '',
                 'placeholder' => 'Berätta vad du siktar på, så hjälper vi dig att hitta rätt turnering eller läger.'],
-            ['key' => 'field_s1_dev_cta_button', 'label' => 'Knapptext', 'name' => 's1_dev_cta_button', 'type' => 'text', 'placeholder' => 'Boka möte', 'wrapper' => $half],
+            ['key' => 'field_s1_dev_cta_button', 'label' => 'Knapptext', 'name' => 's1_dev_cta_button', 'type' => 'text', 'placeholder' => 'Boka möte', 'wrapper' => $half,
+                'instructions' => 'Knappen leder till Boka möte.'],
+
+            ['key' => 'field_s1_dev_tab_card', 'label' => '4. Kort på Juniorutveckling', 'type' => 'tab'],
+            ['key' => 'field_s1_card_help', 'label' => '', 'type' => 'message',
+                'message' => 'Kortet visas på sidan Juniorutveckling och leder hit när besökaren klickar på det.'],
+            ['key' => 'field_s1_card_image', 'label' => 'Kortbild', 'name' => 's1_card_image', 'instructions' => 'Lämna tomt för att använda toppbilden.'] + $image,
+            ['key' => 'field_s1_card_label', 'label' => 'Liten rubrik', 'name' => 's1_card_label', 'type' => 'text', 'placeholder' => 'Development', 'wrapper' => $half],
+            ['key' => 'field_s1_card_title', 'label' => 'Stor rubrik', 'name' => 's1_card_title', 'type' => 'text', 'placeholder' => 'Golf', 'wrapper' => $half],
+            ['key' => 'field_s1_card_text', 'label' => 'Text', 'name' => 's1_card_text', 'type' => 'textarea', 'rows' => 2, 'new_lines' => '',
+                'placeholder' => 'Träningsläger, tävlingar och college showcases med S1-coach.'],
         ],
         'location' => [[['param' => 'page_template', 'operator' => '==', 'value' => S1_DEV_TEMPLATE]]],
-        'position' => 'normal',
+        'position' => 'acf_after_title',
         'style' => 'default',
         'label_placement' => 'top',
+        'hide_on_screen' => ['the_content', 'featured_image', 'excerpt', 'discussion', 'comments', 'author', 'format', 'categories', 'tags', 'send-trackbacks'],
         'active' => true,
     ]);
 
@@ -107,6 +110,55 @@ add_action('acf/init', function (): void {
         ]);
     }
 });
+
+/*
+ * Development pages use the classic editor so the page is just a title plus the form above,
+ * in page order. (In the block editor the form is squeezed into a panel at the bottom.)
+ */
+add_filter('use_block_editor_for_post', function (bool $use, WP_Post $post): bool {
+    return $post->post_type === 'page' && get_page_template_slug($post) === S1_DEV_TEMPLATE ? false : $use;
+}, 10, 2);
+
+/** The page's sport while editing it in wp-admin (or from the form being saved). */
+function s1_dev_admin_sport(): string {
+    $post_id = isset($_GET['post']) ? absint($_GET['post']) : (isset($_POST['post_ID']) ? absint($_POST['post_ID']) : 0);
+    return $post_id ? s1_dev_meta($post_id, 's1_dev_sport') : '';
+}
+
+/** Grey hints that match what an empty field shows on this page's sport. */
+add_filter('acf/prepare_field', function ($field) {
+    if (!is_array($field) || !str_starts_with((string) ($field['key'] ?? ''), 'field_s1_')) return $field;
+    $sport = s1_dev_admin_sport();
+    if ($sport === '') return $field;
+    $name = s1_dev_sports()[$sport] ?? '';
+    $golf = $sport === 'golf';
+    $hints = [
+        'field_s1_dev_heading_italic' => $name,
+        'field_s1_card_title' => $name,
+        'field_s1_dev_list_bold' => $golf ? 'Tävlingar' : 'Turneringar',
+        'field_s1_dev_cta_text' => $golf
+            ? 'Berätta vad du siktar på, så hjälper vi dig att hitta rätt tävling eller läger.'
+            : 'Berätta vad du siktar på, så hjälper vi dig att hitta rätt turnering eller läger.',
+        'field_s1_card_text' => $golf
+            ? 'Träningsläger, tävlingar och college showcases med S1-coach.'
+            : 'ITF-turneringar, läger och tävlingsresor med S1-coach.',
+    ];
+    if (isset($hints[$field['key']])) $field['placeholder'] = $hints[$field['key']];
+    return $field;
+});
+
+/*
+ * Earlier versions used the featured image and the editor text for the top of the page.
+ * Show those in the new fields until the page is saved, so nothing looks missing.
+ */
+add_filter('acf/load_value/key=field_s1_dev_hero_image', function ($value, $post_id) {
+    return $value ?: ((int) get_post_thumbnail_id((int) $post_id) ?: $value);
+}, 10, 2);
+add_filter('acf/load_value/key=field_s1_dev_intro', function ($value, $post_id) {
+    if ($value) return $value;
+    $content = trim(wp_strip_all_tags((string) get_post_field('post_content', (int) $post_id)));
+    return $content !== '' ? $content : $value;
+}, 10, 2);
 
 function s1d_icon(string $name, int $size = 18): string {
     $paths = [
@@ -156,6 +208,16 @@ function s1_booking_url(array $args = []): string {
     return $args ? add_query_arg(array_map('rawurlencode', $args), $url) : $url;
 }
 
+/**
+ * The top image: the "Toppbild" field once the page has been saved with the new form,
+ * before that the featured image (how the first version worked).
+ */
+function s1_dev_hero_id(int $post_id): int {
+    return metadata_exists('post', $post_id, 's1_dev_hero_image')
+        ? (int) s1_dev_meta($post_id, 's1_dev_hero_image')
+        : (int) get_post_thumbnail_id($post_id);
+}
+
 /** Published Development pages in the current language. */
 function s1_development_pages(): array {
     return get_posts([
@@ -178,7 +240,7 @@ function s1_render_development_cards(string $html): string {
     foreach ($pages as $page) {
         $id = (int) $page->ID;
         $sport = s1_dev_meta($id, 's1_dev_sport');
-        $image_id = (int) s1_dev_meta($id, 's1_card_image') ?: (int) get_post_thumbnail_id($id);
+        $image_id = (int) s1_dev_meta($id, 's1_card_image') ?: s1_dev_hero_id($id);
         $title = s1_dev_meta($id, 's1_card_title', s1_dev_sports()[$sport] ?? get_the_title($page));
         $cards .= '<a class="s1d-sport" href="' . esc_url(get_permalink($page)) . '">'
             . s1d_image($image_id, 's1d-sport__img', '(max-width: 767px) 100vw, 520px')
@@ -218,13 +280,15 @@ function s1_development_main(int $post_id): string {
     $sport = s1_dev_meta($post_id, 's1_dev_sport', 'tennis');
     $sport_name = s1_dev_sports()[$sport] ?? ucfirst($sport);
     $events = function_exists('s1_get_events') ? s1_get_events($sport) : [];
-    $hero_id = (int) get_post_thumbnail_id($post_id) ?: (int) s1_dev_meta($post_id, 's1_card_image');
+    $hero_id = s1_dev_hero_id($post_id);
     $is_golf = $sport === 'golf';
 
     $bold = s1_dev_meta($post_id, 's1_dev_heading_bold');
     $italic = s1_dev_meta($post_id, 's1_dev_heading_italic');
     if ($bold === '' && $italic === '') $bold = get_the_title($post_id);
-    $intro = trim((string) apply_filters('the_content', (string) get_post_field('post_content', $post_id)));
+    $intro = metadata_exists('post', $post_id, 's1_dev_intro')
+        ? s1d_paragraphs(s1_dev_meta($post_id, 's1_dev_intro'))
+        : trim((string) apply_filters('the_content', (string) get_post_field('post_content', $post_id)));
     $junior_url = home_url(s1_lang() === 'en' ? '/junior-development/' : '/junior-utveckling/');
 
     $upcoming = count(array_filter($events, static fn(array $e): bool => !$e['past']));
