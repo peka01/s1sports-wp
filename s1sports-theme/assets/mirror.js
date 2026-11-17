@@ -64,6 +64,39 @@ document.addEventListener('DOMContentLoaded', () => {
       button.closest('.wpml-ls-item')?.classList.remove('wpml-ls-item-open');
     });
   });
+  // "Våra tjänster" dropdown: the chevron toggles it (needed for touch and the mobile menu); Escape or a click elsewhere closes it.
+  const subMenus = document.querySelectorAll('.s1-has-sub');
+  const closeSubMenus = (except) => subMenus.forEach(item => {
+    if (item === except) return;
+    item.classList.remove('is-open');
+    item.querySelector('.s1-sub-toggle')?.setAttribute('aria-expanded', 'false');
+  });
+  subMenus.forEach(item => {
+    const toggle = item.querySelector('.s1-sub-toggle');
+    toggle?.addEventListener('click', (event) => {
+      event.preventDefault();
+      const open = !item.classList.contains('is-open');
+      closeSubMenus(item);
+      item.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+  });
+  document.addEventListener('click', event => { if (!event.target.closest('.s1-has-sub')) closeSubMenus(); });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    subMenus.forEach(item => {
+      if (!item.matches('.is-open, :hover, :focus-within')) return;
+      item.classList.add('is-dismissed');
+      if (item.contains(document.activeElement)) item.querySelector('.s1-sub-toggle')?.focus();
+    });
+    closeSubMenus();
+  });
+  // A dismissed dropdown stays closed until the pointer or focus leaves it.
+  subMenus.forEach(item => {
+    item.addEventListener('mouseleave', () => item.classList.remove('is-dismissed'));
+    item.addEventListener('focusout', event => { if (!item.contains(event.relatedTarget)) item.classList.remove('is-dismissed'); });
+    item.querySelector('.s1-sub-toggle')?.addEventListener('click', () => item.classList.remove('is-dismissed'));
+  });
   document.querySelectorAll('.breakdance-menu-toggle').forEach(button => {
     button.addEventListener('click', (event) => { event.preventDefault();
       const nav = button.closest('.breakdance-menu');

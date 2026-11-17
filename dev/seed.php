@@ -59,9 +59,17 @@ $galleries = [
 $start = s1dev_page('Start', 'start');
 update_option('show_on_front', 'page');
 update_option('page_on_front', $start);
-s1dev_page('Junior utveckling', 'junior-utveckling');
-s1dev_page('Boka möte', 'boka-mote');
-s1dev_page('Kontakt', 'kontakt');
+// Every page that has a snapshot, so all 18 can be checked locally (English is picked by slug without WPML).
+foreach ([
+    'junior-utveckling' => 'Juniorutveckling', 'boka-mote' => 'Boka möte', 'kontakt' => 'Kontakt',
+    'vara-tjanster' => 'Våra tjänster', 'vara-idrottare' => 'Våra idrottare', 'om-oss' => 'Om oss',
+    'professionell-radgivning' => 'Professionell rådgivning', 'college-rekrytering' => 'Collegerekrytering',
+    'home' => 'Home', 'junior-development' => 'Junior development', 'about-us' => 'About us',
+    'pro-consulting' => 'Professional guidance', 'our-services' => 'Our services', 'our-athletes' => 'Our athletes',
+    'contact' => 'Contact', 'college-recruiting' => 'College recruiting', 'book-a-meeting' => 'Book a meeting',
+] as $slug => $title) {
+    s1dev_page($title, $slug);
+}
 
 $golf = s1dev_page('Development Golf', 'development-golf', [
     'menu_order' => 1,
