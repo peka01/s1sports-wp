@@ -74,7 +74,7 @@ for (const [lang, site] of Object.entries(sites)) {
     if (status !== 200) problems.push(`returns ${status}`);
     if (!body.includes('class="s1d-h1"')) problems.push('Development layout missing');
     if (/<b>(Fatal error|Warning|Notice|Deprecated)<\/b>/.test(body)) problems.push('PHP error on page');
-    const events = (body.match(/class="s1d-card[ "]/g) || []).length;
+    const events = (body.match(/class="s1d-row s1d-row--/g) || []).length;
     if (events && !body.includes(site.upcoming)) problems.push(`labels not in ${lang}`);
     const register = (body.match(/href="([^"]*s1_event=[^"]*)"/) || [])[1] || '';
     if (register && !register.includes(site.base.replace('https://', '') + site.booking)) problems.push('"register interest" links to ' + register.split('?')[0]);

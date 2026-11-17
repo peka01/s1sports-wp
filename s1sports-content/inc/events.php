@@ -2,7 +2,7 @@
 /**
  * Events for the Development Golf / Development Tennis pages.
  *
- * Editors add events under "Event" in wp-admin. An event counts as completed
+ * Editors add events under "Event" in wp-admin. An event counts as previous ("Tidigare")
  * from the day after its end date (or start date when it has no end date).
  */
 defined('ABSPATH') || exit;
@@ -85,16 +85,15 @@ add_action('acf/init', function (): void {
                 'return_format' => 'id', 'preview_size' => 'medium', 'library' => 'all'],
             ['key' => 'field_s1_event_start', 'label' => 'Startdatum', 'name' => 's1_event_start', 'required' => 1] + $date,
             ['key' => 'field_s1_event_end', 'label' => 'Slutdatum', 'name' => 's1_event_end',
-                'instructions' => 'Lämna tomt för endagsevent. Eventet flyttas till Genomförda dagen efter.'] + $date,
-            ['key' => 'field_s1_event_place', 'label' => 'Plats', 'name' => 's1_event_place', 'type' => 'text', 'placeholder' => 'Malmö, Sverige', 'wrapper' => $half],
-            ['key' => 'field_s1_event_coach', 'label' => 'Coach', 'name' => 's1_event_coach', 'type' => 'text', 'wrapper' => $half],
+                'instructions' => 'Lämna tomt för endagsevent. Eventet flyttas till Tidigare dagen efter.'] + $date,
+            ['key' => 'field_s1_event_place', 'label' => 'Plats', 'name' => 's1_event_place', 'type' => 'text', 'placeholder' => 'Malmö, Sverige'],
             ['key' => 'field_s1_event_summary', 'label' => 'Kort beskrivning', 'name' => 's1_event_summary', 'rows' => 2,
                 'instructions' => 'En eller två meningar.'] + $text,
 
             ['key' => 'field_s1_event_tab_box', 'label' => '2. Rutan', 'type' => 'tab'],
             ['key' => 'field_s1_event_box_help', 'label' => '', 'type' => 'message',
-                'message' => 'Rutan öppnas när besökaren klickar på eventet. Den visar också datum, plats och coach från fliken Kortet.'],
-            ['key' => 'field_s1_event_fee', 'label' => 'Avgift', 'name' => 's1_event_fee', 'type' => 'text', 'placeholder' => '450 kr/dag + coachkostnader', 'wrapper' => ['width' => '34']],
+                'message' => 'Rutan öppnas när besökaren klickar på eventet. Den visar också datum och plats från fliken Kortet.'],
+            ['key' => 'field_s1_event_fee', 'label' => 'Avgift', 'name' => 's1_event_fee', 'type' => 'text', 'placeholder' => '450 kr/dag', 'wrapper' => ['width' => '34']],
             ['key' => 'field_s1_event_age', 'label' => 'Ålder', 'name' => 's1_event_age', 'type' => 'text', 'placeholder' => 'U18', 'wrapper' => ['width' => '33']],
             ['key' => 'field_s1_event_deadline', 'label' => 'Sista anmälan', 'name' => 's1_event_deadline', 'type' => 'text', 'placeholder' => '1 augusti', 'wrapper' => ['width' => '33'],
                 'instructions' => 'Visas bara för kommande event.'],
@@ -105,14 +104,14 @@ add_action('acf/init', function (): void {
 
             ['key' => 'field_s1_event_tab_photos', 'label' => '3. Bilder', 'type' => 'tab'],
             ['key' => 'field_s1_event_gallery_title', 'label' => 'Rubrik för bilderna', 'name' => 's1_event_gallery_title', 'type' => 'text',
-                'instructions' => 'Lämna tomt för "Bilder från eventet" (genomförda event) eller "Bilder" (kommande).', 'placeholder' => 'Om arenan'],
+                'instructions' => 'Lämna tomt för "Bilder från eventet" (tidigare event) eller "Bilder" (kommande).', 'placeholder' => 'Om arenan'],
             ['key' => 'field_s1_event_gallery', 'label' => 'Bildspel', 'name' => 's1_event_gallery', 'type' => 's1_gallery',
                 'instructions' => 'Visas som bildspel i rutan. Lägg till bilder på banan eller arenan inför eventet, och bilder från eventet efteråt. Dra för att ändra ordning. Bildtexten hämtas från mediabiblioteket.'],
 
             ['key' => 'field_s1_event_tab_after', 'label' => '4. Efter eventet', 'type' => 'tab'],
             ['key' => 'field_s1_event_result', 'label' => 'Resultat och höjdpunkter', 'name' => 's1_event_result', 'rows' => 5,
-                'instructions' => 'Visas i rutan när eventet är genomfört. Lägg gärna till bilder från eventet under fliken Bilder.'] + $text,
-        ], ['s1_event_sport', 's1_event_start', 's1_event_end', 's1_event_coach', 's1_event_image', 's1_event_gallery']),
+                'instructions' => 'Visas i rutan när eventet har varit. Lägg gärna till bilder från eventet under fliken Bilder.'] + $text,
+        ], ['s1_event_sport', 's1_event_start', 's1_event_end', 's1_event_image', 's1_event_gallery']),
         'location' => [[['param' => 'post_type', 'operator' => '==', 'value' => 's1_event']]],
         'position' => 'acf_after_title',
         'style' => 'default',
@@ -178,7 +177,7 @@ function s1_event_is_past(string $start, string $end): bool {
 
 /**
  * Published events for one sport in the current language, upcoming first
- * (soonest first), then completed (most recent first).
+ * (soonest first), then previous (most recent first).
  */
 function s1_get_events(string $sport): array {
     $posts = get_posts([
@@ -204,7 +203,6 @@ function s1_get_events(string $sport): array {
             'end' => $end,
             'dates' => s1_event_date_label($start, $end),
             'place' => s1_event_meta($id, 's1_event_place'),
-            'coach' => s1_event_meta($id, 's1_event_coach'),
             'fee' => s1_event_meta($id, 's1_event_fee'),
             'age' => s1_event_meta($id, 's1_event_age'),
             'deadline' => s1_event_meta($id, 's1_event_deadline'),
@@ -255,7 +253,7 @@ add_action('manage_s1_event_posts_custom_column', function (string $column, int 
     } elseif ($column === 's1_event_dates') {
         echo esc_html(s1_event_date_label($start, $end) ?: '—');
     } elseif ($column === 's1_event_status') {
-        echo s1_event_is_past($start, $end) ? 'Genomfört' : 'Kommande';
+        echo s1_event_is_past($start, $end) ? 'Tidigare' : 'Kommande';
     } elseif ($column === 's1_event_photos') {
         echo (int) count(s1_event_gallery_ids($post_id));
     }

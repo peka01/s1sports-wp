@@ -322,7 +322,7 @@ function s1_development_main(int $post_id): string {
         . s1d_heading('h2', s1_dev_meta($post_id, 's1_dev_list_bold', $is_golf ? s1_text('Tävlingar', 'Competitions') : s1_text('Turneringar', 'Tournaments')), s1_dev_meta($post_id, 's1_dev_list_italic', s1_text('& läger', '& camps')), ' class="s1d-h2"');
     if ($events) {
         $out .= '<div class="s1d-filter" role="group" aria-label="' . esc_attr(s1_text('Filtrera event', 'Filter events')) . '">';
-        foreach (['upcoming' => [s1_text('Kommande', 'Upcoming'), $upcoming], 'past' => [s1_text('Genomförda', 'Completed'), $past], 'all' => [s1_text('Alla', 'All'), count($events)]] as $key => [$label, $count]) {
+        foreach (['upcoming' => [s1_text('Kommande', 'Upcoming'), $upcoming], 'past' => [s1_text('Tidigare', 'Previous'), $past], 'all' => [s1_text('Alla', 'All'), count($events)]] as $key => [$label, $count]) {
             $out .= '<button type="button" class="s1d-chip" data-s1d-filter="' . esc_attr($key) . '" aria-pressed="' . ($key === $default ? 'true' : 'false') . '">' . esc_html($label) . ' (' . (int) $count . ')</button>';
         }
         $out .= '</div>';
@@ -330,10 +330,10 @@ function s1_development_main(int $post_id): string {
     $out .= '</div>';
 
     if ($events) {
-        $out .= '<div class="s1d-grid">';
-        foreach ($events as $event) $out .= s1_development_event_card($event);
+        $out .= '<div class="s1d-list">';
+        foreach ($events as $event) $out .= s1_development_event_row($event);
         $out .= '</div>';
-        $out .= '<p class="s1d-empty" hidden data-empty-upcoming="' . esc_attr(s1_text('Inga kommande event just nu. Hör av dig så berättar vi vad som är på gång.', 'No upcoming events right now. Get in touch and we will tell you what is coming up.')) . '" data-empty-past="' . esc_attr(s1_text('Inga genomförda event ännu.', 'No completed events yet.')) . '"></p>';
+        $out .= '<p class="s1d-empty" hidden data-empty-upcoming="' . esc_attr(s1_text('Inga kommande event just nu. Hör av dig så berättar vi vad som är på gång.', 'No upcoming events right now. Get in touch and we will tell you what is coming up.')) . '" data-empty-past="' . esc_attr(s1_text('Inga tidigare event ännu.', 'No previous events yet.')) . '"></p>';
     } else {
         $out .= '<p class="s1d-empty">' . esc_html(s1_text('Inga event publicerade ännu. Hör av dig så berättar vi vad som är på gång.', 'No events published yet. Get in touch and we will tell you what is coming up.')) . '</p>';
     }
@@ -384,32 +384,41 @@ function s1d_gallery(array $ids, string $title): string {
         . '</section>';
 }
 
-function s1_development_event_card(array $event): string {
+/** The big date at the start of an event row: "8–14" over "mar 2027". */
+function s1d_date_parts(string $start, string $end): array {
+    $tz = wp_timezone();
+    $from = preg_match('/^\d{8}$/', $start) ? DateTimeImmutable::createFromFormat('!Ymd', $start, $tz) : false;
+    if (!$from) return ['day' => '', 'month' => ''];
+    $to = preg_match('/^\d{8}$/', $end) ? DateTimeImmutable::createFromFormat('!Ymd', $end, $tz) : false;
+    $f = static fn(DateTimeImmutable $d, string $format): string => wp_date($format, $d->getTimestamp());
+    if (!$to || $to <= $from) return ['day' => $f($from, 'j'), 'month' => $f($from, 'M Y')];
+    $day = $f($from, 'j') . '–' . $f($to, 'j');
+    if ($from->format('Ym') === $to->format('Ym')) return ['day' => $day, 'month' => $f($to, 'M Y')];
+    if ($from->format('Y') === $to->format('Y')) return ['day' => $day, 'month' => $f($from, 'M') . '–' . $f($to, 'M Y')];
+    return ['day' => $day, 'month' => $f($from, 'M Y') . '–' . $f($to, 'M Y')];
+}
+
+/** One event in the agenda list: date, text, photo and arrow. The whole row opens the event's dialog. */
+function s1_development_event_row(array $event): string {
     $status = $event['past'] ? 'past' : 'upcoming';
     $dialog = 's1d-event-' . (int) $event['id'];
     $photos = count($event['gallery'] ?? []);
     $cover = (int) ($event['image_id'] ?: ($event['gallery'][0] ?? 0));
-    $media = $cover > 0
-        ? '<div class="s1d-card__media">' . s1d_image($cover, 's1d-card__img', '(max-width: 767px) 100vw, 340px')
-            . ($photos > 0 ? '<span class="s1d-card__photos">' . s1d_icon('camera', 16) . esc_html($photos === 1 ? s1_text('1 bild', '1 photo') : sprintf(s1_text('%d bilder', '%d photos'), $photos)) . '</span>' : '')
-            . '</div>'
-        : '';
+    $date = s1d_date_parts($event['start'], $event['end']);
+    $type = $event['series'] . ($event['past'] ? ($event['series'] !== '' ? ' · ' : '') . s1_text('Tidigare', 'Previous') : '');
     $meta = '';
-    if ($event['dates'] !== '') $meta .= '<li>' . s1d_icon('calendar') . '<span>' . esc_html($event['dates']) . '</span></li>';
-    if ($event['place'] !== '') $meta .= '<li>' . s1d_icon('pin') . '<span>' . esc_html($event['place']) . '</span></li>';
-    if ($event['coach'] !== '') $meta .= '<li class="s1d-card__muted">' . s1d_icon('user') . '<span>' . esc_html(s1_text('Coach', 'Coach')) . ': <strong>' . esc_html($event['coach']) . '</strong></span></li>';
-    return '<article class="s1d-card' . ($media !== '' ? ' s1d-card--media' : '') . '" data-s1d-status="' . $status . '">'
-        . $media
-        . '<div class="s1d-card__top"><span class="s1d-eyebrow">' . esc_html($event['series']) . '</span>'
-        . ($event['past']
-            ? '<span class="s1d-badge s1d-badge--past">' . esc_html(s1_text('Genomfört', 'Completed')) . '</span>'
-            : '<span class="s1d-badge">' . esc_html(s1_text('Kommande', 'Upcoming')) . '</span>')
+    if ($event['place'] !== '') $meta .= '<span>' . s1d_icon('pin', 16) . esc_html($event['place']) . '</span>';
+    if ($photos > 0) $meta .= '<span>' . s1d_icon('camera', 16) . esc_html($photos === 1 ? s1_text('1 bild', '1 photo') : sprintf(s1_text('%d bilder', '%d photos'), $photos)) . '</span>';
+    return '<article class="s1d-row s1d-row--' . $status . ($cover > 0 ? '' : ' s1d-row--nomedia') . '" data-s1d-status="' . $status . '">'
+        . '<p class="s1d-row__date"><span class="s1d-row__day">' . esc_html($date['day']) . '</span><span class="s1d-row__month">' . esc_html($date['month']) . '</span></p>'
+        . '<div class="s1d-row__body">'
+        . ($type !== '' ? '<p class="s1d-row__type">' . esc_html($type) . '</p>' : '')
+        . '<h3 class="s1d-row__title"><button type="button" class="s1d-row__open" data-s1d-open="' . esc_attr($dialog) . '" aria-haspopup="dialog">' . esc_html($event['title']) . '</button></h3>'
+        . ($meta !== '' ? '<p class="s1d-row__meta">' . $meta . '</p>' : '')
+        . ($event['summary'] !== '' ? '<p class="s1d-row__summary">' . esc_html($event['summary']) . '</p>' : '')
         . '</div>'
-        . '<h3 class="s1d-card__title">' . esc_html($event['title']) . '</h3>'
-        . ($meta !== '' ? '<ul class="s1d-card__meta">' . $meta . '</ul>' : '')
-        . ($event['summary'] !== '' ? '<p class="s1d-card__summary">' . esc_html($event['summary']) . '</p>' : '')
-        . '<button type="button" class="s1d-btn ' . ($event['past'] ? 's1d-btn--ghost' : 's1d-btn--light') . ' s1d-card__btn" data-s1d-open="' . esc_attr($dialog) . '" aria-haspopup="dialog">'
-        . esc_html($event['past'] ? s1_text('Se sammanfattning', 'View summary') : s1_text('Visa detaljer', 'View details')) . s1d_icon('arrow-right', 16) . '</button>'
+        . ($cover > 0 ? '<div class="s1d-row__media">' . s1d_image($cover, 's1d-row__img', '(max-width: 720px) 100vw, 260px') . '</div>' : '')
+        . '<span class="s1d-row__go" aria-hidden="true">' . s1d_icon('arrow-up-right', 22) . '</span>'
         . '</article>';
 }
 
@@ -418,7 +427,6 @@ function s1_development_event_dialog(array $event, int $fallback_image, string $
     $facts = [
         s1_text('Datum', 'Dates') => $event['dates'],
         s1_text('Plats', 'Location') => $event['place'],
-        s1_text('Coach', 'Coach') => $event['coach'],
         s1_text('Avgift', 'Fee') => $event['fee'],
         s1_text('Ålder', 'Age group') => $event['age'],
         s1_text('Sista anmälan', 'Registration deadline') => $event['past'] ? '' : $event['deadline'],
@@ -443,7 +451,7 @@ function s1_development_event_dialog(array $event, int $fallback_image, string $
         if ($event['result'] !== '') {
             $body .= '<div class="s1d-modal__section"><h3>' . esc_html(s1_text('Resultat och höjdpunkter', 'Results and highlights')) . '</h3>' . s1d_paragraphs($event['result']) . '</div>';
         }
-        $body .= '<div class="s1d-modal__note"><p>' . esc_html(s1_text('Eventet är genomfört. Vill du vara med nästa gång?', 'This event has finished. Want to join next time?')) . '</p>'
+        $body .= '<div class="s1d-modal__note"><p>' . esc_html(s1_text('Det här eventet har redan varit. Vill du vara med nästa gång?', 'This event has already taken place. Want to join next time?')) . '</p>'
             . '<a class="s1d-btn s1d-btn--light" href="' . esc_url(s1_booking_url(['s1_sport' => $sport_name])) . '">' . esc_html(s1_text('Kontakta oss', 'Contact us')) . '</a></div>';
     } else {
         if ($event['includes']) {

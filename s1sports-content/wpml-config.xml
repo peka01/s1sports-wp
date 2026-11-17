@@ -13,7 +13,6 @@
     <custom-field action="copy">s1_event_end</custom-field>
     <custom-field action="translate">s1_event_series</custom-field>
     <custom-field action="translate">s1_event_place</custom-field>
-    <custom-field action="copy">s1_event_coach</custom-field>
     <custom-field action="translate">s1_event_fee</custom-field>
     <custom-field action="translate">s1_event_age</custom-field>
     <custom-field action="translate">s1_event_deadline</custom-field>
