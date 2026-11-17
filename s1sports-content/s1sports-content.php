@@ -2,7 +2,7 @@
 /**
  * Plugin Name: S1 Sports Content
  * Description: Athlete content model for the S1 Sports theme.
- * Version: 0.5.0
+ * Version: 0.6.0
  * Requires PHP: 8.0
  * Text Domain: s1sports-content
  */

@@ -21,5 +21,7 @@
     <custom-field action="translate">s1_event_about</custom-field>
     <custom-field action="translate">s1_event_includes</custom-field>
     <custom-field action="translate">s1_event_result</custom-field>
+    <custom-field action="copy">s1_event_gallery</custom-field>
+    <custom-field action="translate">s1_event_gallery_title</custom-field>
   </custom-fields>
 </wpml-config>

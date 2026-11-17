@@ -22,6 +22,33 @@ document.addEventListener('DOMContentLoaded', () => {
     apply(events.dataset.s1dDefault || 'upcoming');
   }
 
+  // Photo slideshow inside an event dialog. Started on first open, when the dialog has a size.
+  const startGallery = (root) => {
+    if (root.dataset.s1dReady || typeof window.Swiper !== 'function') return;
+    root.dataset.s1dReady = '1';
+    const sv = document.documentElement.lang.startsWith('sv');
+    const mainEl = root.querySelector('.s1d-gallery__main');
+    const thumbsEl = root.querySelector('.s1d-gallery__thumbs');
+    const count = root.querySelector('.s1d-gallery__count');
+    const total = mainEl.querySelectorAll('.swiper-slide').length;
+    if (total < 2) return;
+    const thumbs = thumbsEl ? new window.Swiper(thumbsEl, { slidesPerView: 'auto', spaceBetween: 8, watchSlidesProgress: true, slideToClickedSlide: true }) : null;
+    new window.Swiper(mainEl, {
+      spaceBetween: 12,
+      keyboard: { enabled: true, onlyInViewport: true },
+      navigation: { prevEl: root.querySelector('.s1d-gallery__prev'), nextEl: root.querySelector('.s1d-gallery__next') },
+      thumbs: thumbs ? { swiper: thumbs } : undefined,
+      a11y: {
+        prevSlideMessage: sv ? 'Föregående bild' : 'Previous photo',
+        nextSlideMessage: sv ? 'Nästa bild' : 'Next photo',
+        slideLabelMessage: sv ? 'Bild {{index}} av {{slidesLength}}' : 'Photo {{index}} of {{slidesLength}}'
+      },
+      on: {
+        slideChange(swiper) { if (count) count.textContent = (swiper.activeIndex + 1) + ' / ' + total; }
+      }
+    });
+  };
+
   let opener = null;
   document.addEventListener('click', (event) => {
     const trigger = event.target.closest('[data-s1d-open]');
@@ -31,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     opener = trigger;
     dialog.showModal();
     document.documentElement.classList.add('s1d-lock');
+    dialog.querySelectorAll('[data-s1d-gallery]').forEach(startGallery);
   });
   document.querySelectorAll('dialog.s1d-modal').forEach((dialog) => {
     dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });

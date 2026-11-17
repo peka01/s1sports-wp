@@ -157,6 +157,8 @@ function s1_get_events(string $sport): array {
             'includes' => $includes,
             'result' => s1_event_meta($id, 's1_event_result'),
             'image_id' => (int) get_post_thumbnail_id($post),
+            'gallery' => s1_event_gallery_ids($id),
+            'gallery_title' => s1_event_meta($id, 's1_event_gallery_title'),
             'past' => s1_event_is_past($start, $end),
         ];
     }
@@ -168,6 +170,61 @@ function s1_get_events(string $sport): array {
     return $events;
 }
 
+/*
+ * Photo gallery: a list of media library images per event, stored as comma-separated
+ * attachment IDs in s1_event_gallery. (ACF's gallery field needs ACF PRO.)
+ */
+function s1_event_gallery_ids(int $post_id): array {
+    $ids = array_filter(array_map('absint', explode(',', s1_event_meta($post_id, 's1_event_gallery'))));
+    return array_values(array_unique(array_filter($ids, static fn(int $id): bool => wp_attachment_is_image($id))));
+}
+
+add_action('add_meta_boxes_s1_event', function (): void {
+    add_meta_box('s1-event-gallery', 'Bilder', 's1_event_gallery_box', 's1_event', 'normal', 'default');
+});
+
+function s1_event_gallery_box(WP_Post $post): void {
+    wp_nonce_field('s1_event_gallery', 's1_event_gallery_nonce');
+    $ids = s1_event_gallery_ids((int) $post->ID);
+    echo '<div class="s1-gallery-box' . ($ids ? ' has-images' : '') . '">';
+    echo '<p class="description">Bilderna visas som ett bildspel när besökaren öppnar eventet. Lägg till bilder på banan eller arenan inför eventet, och bilder från eventet efteråt. Dra för att ändra ordning. Bildtexten hämtas från mediabiblioteket.</p>';
+    echo '<ul class="s1-gallery-list">';
+    foreach ($ids as $id) {
+        echo '<li data-id="' . (int) $id . '">' . wp_get_attachment_image($id, 'thumbnail', false, ['alt' => '']) . '<button type="button" class="s1-gallery-remove" aria-label="Ta bort bild">&times;</button></li>';
+    }
+    echo '</ul>';
+    echo '<p class="s1-gallery-empty">Inga bilder ännu.</p>';
+    echo '<p><button type="button" class="button s1-gallery-add">Lägg till bilder</button></p>';
+    echo '<input type="hidden" name="s1_event_gallery" value="' . esc_attr(implode(',', $ids)) . '">';
+    echo '</div>';
+    $title = s1_event_meta((int) $post->ID, 's1_event_gallery_title');
+    echo '<p><label for="s1-event-gallery-title"><strong>Rubrik för bilderna</strong></label><br>';
+    echo '<input type="text" class="widefat" id="s1-event-gallery-title" name="s1_event_gallery_title" value="' . esc_attr($title) . '" placeholder="Bilder från eventet / Om anläggningen">';
+    echo '<span class="description">Lämna tomt för "Bilder från eventet" (genomförda event) eller "Bilder" (kommande).</span></p>';
+}
+
+add_action('save_post_s1_event', function (int $post_id): void {
+    if (!isset($_POST['s1_event_gallery_nonce']) || !wp_verify_nonce(sanitize_key(wp_unslash($_POST['s1_event_gallery_nonce'])), 's1_event_gallery')) return;
+    if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || wp_is_post_revision($post_id) || !current_user_can('edit_post', $post_id)) return;
+    $raw = isset($_POST['s1_event_gallery']) ? sanitize_text_field(wp_unslash($_POST['s1_event_gallery'])) : '';
+    $ids = array_values(array_unique(array_filter(array_map('absint', explode(',', $raw)), static fn(int $id): bool => wp_attachment_is_image($id))));
+    if ($ids) update_post_meta($post_id, 's1_event_gallery', implode(',', $ids));
+    else delete_post_meta($post_id, 's1_event_gallery');
+    $title = isset($_POST['s1_event_gallery_title']) ? sanitize_text_field(wp_unslash($_POST['s1_event_gallery_title'])) : '';
+    if ($title !== '') update_post_meta($post_id, 's1_event_gallery_title', $title);
+    else delete_post_meta($post_id, 's1_event_gallery_title');
+});
+
+add_action('admin_enqueue_scripts', function (string $hook): void {
+    $screen = get_current_screen();
+    if (!$screen || $screen->post_type !== 's1_event' || !in_array($hook, ['post.php', 'post-new.php'], true)) return;
+    $base = plugin_dir_url(dirname(__DIR__) . '/s1sports-content.php');
+    $version = '0.6.0';
+    wp_enqueue_media();
+    wp_enqueue_style('s1-event-gallery', $base . 'assets/admin-event-gallery.css', [], $version);
+    wp_enqueue_script('s1-event-gallery', $base . 'assets/admin-event-gallery.js', ['jquery', 'jquery-ui-sortable'], $version, true);
+});
+
 add_filter('manage_s1_event_posts_columns', function (array $columns): array {
     return [
         'cb' => $columns['cb'] ?? '',
@@ -175,6 +232,7 @@ add_filter('manage_s1_event_posts_columns', function (array $columns): array {
         's1_event_sport' => 'Sport',
         's1_event_dates' => 'Datum',
         's1_event_status' => 'Status',
+        's1_event_photos' => 'Bilder',
         'date' => 'Publicerad',
     ];
 });
@@ -188,6 +246,8 @@ add_action('manage_s1_event_posts_custom_column', function (string $column, int 
         echo esc_html(s1_event_date_label($start, $end) ?: '—');
     } elseif ($column === 's1_event_status') {
         echo s1_event_is_past($start, $end) ? 'Genomfört' : 'Kommande';
+    } elseif ($column === 's1_event_photos') {
+        echo (int) count(s1_event_gallery_ids($post_id));
     }
 }, 10, 2);
 

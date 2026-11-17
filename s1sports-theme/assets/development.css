@@ -60,6 +60,10 @@
 .s1d-card { display: flex; flex-direction: column; gap: 18px; padding: 28px; background: var(--s1d-card); border: 1px solid var(--s1d-line); border-radius: 24px; transition: border-color .25s, transform .25s; }
 .s1d-card[hidden] { display: none; }
 .s1d-card:hover { border-color: var(--s1d-line-strong); transform: translateY(-2px); }
+.s1d-card__media { position: relative; margin: -28px -28px 0; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 23px 23px 0 0; background: #191919; }
+.s1d-card__img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.s1d-card:hover .s1d-card__img { transform: scale(1.04); }
+.s1d-card__photos { position: absolute; left: 14px; bottom: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 9999px; background: rgba(13,13,13,.78); color: #fff; font-size: 13px; line-height: 16px; font-weight: 500; }
 .s1d-card__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 26px; }
 .s1d-badge { flex: none; padding: 5px 12px; border-radius: 9999px; background: #fff; color: #0d0d0d; font-size: 12px; line-height: 16px; font-weight: 500; }
 .s1d-badge--past { padding: 4px 11px; background: transparent; border: 1px solid var(--s1d-line-strong); color: var(--s1d-muted); }
@@ -105,6 +109,24 @@ html.s1d-lock { overflow: hidden; }
 .s1d-includes li { display: flex; align-items: flex-start; gap: 10px; margin: 0; }
 .s1d-includes .s1d-icon { margin-top: 3px; }
 .s1d-modal__actions { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 8px; }
+/* Event photo slideshow (Swiper core rules scoped here so the gallery works on any page) */
+.s1d-gallery .swiper { position: relative; overflow: hidden; margin: 0; padding: 0; list-style: none; z-index: 1; }
+.s1d-gallery .swiper-wrapper { position: relative; display: flex; width: 100%; height: 100%; z-index: 1; box-sizing: content-box; transition-property: transform; transition-timing-function: ease; }
+.s1d-gallery .swiper-slide { position: relative; flex-shrink: 0; width: 100%; height: 100%; margin: 0; transition-property: transform; }
+.s1d-gallery__stage { position: relative; }
+.s1d-gallery__main { aspect-ratio: 3 / 2; border-radius: 20px; background: var(--s1d-inset); border: 1px solid #262626; }
+.s1d-gallery__img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.s1d-gallery__slide figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 32px 18px 14px; background: linear-gradient(0deg, rgba(0,0,0,.8), rgba(0,0,0,0)); color: #fff; font-size: 14px; line-height: 20px; }
+.s1d-gallery__nav { position: absolute; top: 50%; z-index: 2; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-top: -22px; padding: 0; border-radius: 9999px; border: 1px solid rgba(255,255,255,.6); background: rgba(13,13,13,.65); color: #fff; cursor: pointer; transition: background-color .2s, color .2s, opacity .2s; }
+.s1d-gallery__nav:hover { background: #fff; color: #0d0d0d; }
+.s1d-gallery__nav:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.s1d-gallery__prev { left: 12px; } .s1d-gallery__next { right: 12px; }
+.s1d-gallery__nav.swiper-button-disabled { opacity: .3; pointer-events: none; }
+.s1d-gallery__count { position: absolute; top: 12px; right: 12px; z-index: 2; padding: 4px 10px; border-radius: 9999px; background: rgba(13,13,13,.7); font-size: 13px; line-height: 16px; font-weight: 500; }
+.s1d-gallery__thumbs { margin-top: 10px; }
+.s1d-gallery__thumbs .swiper-slide.s1d-gallery__thumb { width: 88px; height: 60px; border-radius: 10px; overflow: hidden; opacity: .5; cursor: pointer; transition: opacity .2s; }
+.s1d-gallery__thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.s1d-gallery__thumbs .swiper-slide-thumb-active { opacity: 1; box-shadow: inset 0 0 0 2px #fff; }
 .s1d-modal__note { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 20px 22px; border-radius: 20px; border: 1px solid var(--s1d-line); }
 .s1d-modal__note p { flex: 1 1 240px; margin: 0; color: #d9d9d9; }
 
@@ -118,10 +140,13 @@ html.s1d-lock { overflow: hidden; }
   .s1d-lead { font-size: 16px; line-height: 26px; }
   .s1d-events { padding: 40px 0 70px; }
   .s1d-card { padding: 22px; }
+  .s1d-card__media { margin: -22px -22px 0; }
+  .s1d-gallery__nav { width: 40px; height: 40px; margin-top: -20px; }
+  .s1d-gallery__thumbs .swiper-slide.s1d-gallery__thumb { width: 64px; height: 46px; }
   .s1d-modal { width: calc(100vw - 16px); border-radius: 24px; }
   .s1d-modal__body { padding: 0 22px 24px; }
   .s1d-modal__actions .s1d-btn { flex: 1 1 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .s1d-sport__img, .s1d-card, .s1d-round, .s1d-btn { transition: none; }
+  .s1d-sport__img, .s1d-card, .s1d-card__img, .s1d-round, .s1d-btn { transition: none; }
 }

@@ -1,0 +1,8 @@
+.s1-gallery-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
+.s1-gallery-list li { position: relative; width: 96px; height: 96px; margin: 0; cursor: move; border-radius: 4px; overflow: hidden; background: #f0f0f1; }
+.s1-gallery-list li.ui-sortable-placeholder { visibility: visible !important; border: 2px dashed #c3c4c7; background: transparent; }
+.s1-gallery-list img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.s1-gallery-remove { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .7); color: #fff; font-size: 16px; line-height: 24px; cursor: pointer; }
+.s1-gallery-remove:hover, .s1-gallery-remove:focus { background: #b32d2e; }
+.s1-gallery-empty { color: #646970; font-style: italic; }
+.s1-gallery-box.has-images .s1-gallery-empty { display: none; }

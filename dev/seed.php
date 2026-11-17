@@ -40,6 +40,20 @@ $img = [
     'tennis_hero' => s1dev_image($uploads . '2026/08/WhatsApp-Image-2026-06-16-at-13.37.16.jpeg'),
     'tennis_card' => s1dev_image($uploads . '2026/06/andrew-heald-n9RZ0dCunpY-unsplash-scaled.jpg'),
     'cta' => s1dev_image($uploads . '2026/05/Rectangle-93.png'),
+    'arena1' => s1dev_image($uploads . '2026/05/Rectangle-70.png'),
+    'arena2' => s1dev_image($uploads . '2026/05/Rectangle-71.png'),
+    'arena3' => s1dev_image($uploads . '2026/05/Rectangle-72-1.png'),
+    'tennis1' => s1dev_image($uploads . '2026/09/WhatsApp-Image-2026-07-29-at-17.18.58.jpeg'),
+    'tennis2' => s1dev_image($uploads . '2026/09/WhatsApp-Image-2026-06-29-at-16.25.44.jpeg'),
+    'tennis3' => s1dev_image($uploads . '2026/09/WhatsApp-Image-2025-08-10-at-21.26.32-e1790786759722.jpeg'),
+    'golf1' => s1dev_image($uploads . '2026/08/Oscar-Andreasson.jpg'),
+];
+if ($img['tennis1']) wp_update_post(['ID' => $img['tennis1'], 'post_excerpt' => 'Testbildtext: matchspel under turneringen.']);
+$galleries = [
+    'ITF Malmö' => [$img['arena1'], $img['arena2'], $img['arena3']],
+    'ITF Helsingborg' => [$img['tennis1'], $img['tennis2'], $img['tennis3'], $img['tennis_card']],
+    'Vårläger Falsterbo' => [$img['golf1'], $img['golf_card'], $img['golf_hero']],
+    'S1 Golf Camp' => [$img['golf_hero']],
 ];
 
 $start = s1dev_page('Start', 'start');
@@ -104,6 +118,8 @@ foreach ($events as [$sport, $title, $series, $start_date, $end_date, $place, $c
         'post_status' => 'publish',
         'post_title' => $title,
         'meta_input' => [
+            's1_event_gallery' => implode(',', array_filter($galleries[$title] ?? [])),
+            's1_event_gallery_title' => $title === 'ITF Malmö' ? 'Om arenan' : '',
             's1_event_sport' => $sport, 's1_event_series' => $series,
             's1_event_start' => $start_date, 's1_event_end' => $end_date,
             's1_event_place' => $place, 's1_event_coach' => $coach, 's1_event_fee' => $fee,

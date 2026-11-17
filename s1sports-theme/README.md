@@ -25,6 +25,7 @@ Installera och aktivera även insticksprogrammet `s1sports-content` och ACF. Den
 Allt i den här delen redigeras i wp-admin.
 
 - **Event:** menyn **Event** (från insticksprogrammet `s1sports-content`). Varje event har sport, typ, start- och slutdatum, plats, coach, avgift, ålder, sista anmälan, kort beskrivning, "Om eventet", "Det här ingår" (en punkt per rad), resultat och en eventbild. Ett event flyttas automatiskt till **Genomförda** dagen efter slutdatumet.
+- **Bilder:** rutan **Bilder** på varje event. Välj bilder ur mediabiblioteket, dra för att ändra ordning och skriv en egen rubrik om du vill (t.ex. "Om arenan"). Bilderna visas som ett bildspel med miniatyrer i eventets ruta: för genomförda event direkt under faktarutan, för kommande event efter "Det här ingår". Eventkortet får eventbilden (eller första bilden i bildspelet) överst och visar antalet bilder. Bildtexten hämtas från bildens bildtext i mediabiblioteket.
 - **Development-sidor:** vanliga sidor med mallen **Development (sport)**. Sidans utvalda bild är toppbilden, texten i redigeraren är ingressen, och fälten under redigeraren styr sport, rubriker, kortet på Juniorutveckling (egen kortbild, rubrik och text) och avslutningsrutan.
 - **Juniorutveckling:** sektionen under toppbilden visar ett kort per publicerad Development-sida. Rubrik och text redigeras i fälten på sidan Juniorutveckling.
 - **Anmäl intresse** leder till Boka möte med eventets namn och sport ifyllda i formuläret.

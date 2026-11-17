@@ -118,6 +118,9 @@ function s1d_icon(string $name, int $size = 18): string {
         'user' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
         'check' => '<path d="M5 12l5 5 9-10"/>',
         'close' => '<path d="M6 6l12 12M18 6L6 18"/>',
+        'chevron-left' => '<path d="M15 6l-6 6 6 6"/>',
+        'chevron-right' => '<path d="M9 6l6 6-6 6"/>',
+        'camera' => '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
     ];
     return '<svg class="s1d-icon" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . ($paths[$name] ?? '') . '</svg>';
 }
@@ -273,14 +276,52 @@ function s1_development_main(int $post_id): string {
     return $out . '</main>';
 }
 
+/** Slideshow of an event's photos (Swiper, started by development.js when the dialog opens). */
+function s1d_gallery(array $ids, string $title): string {
+    $ids = array_values(array_filter(array_map('intval', $ids)));
+    if (!$ids) return '';
+    $multiple = count($ids) > 1;
+    $slides = '';
+    $thumbs = '';
+    foreach ($ids as $index => $id) {
+        $caption = trim((string) wp_get_attachment_caption($id));
+        $slides .= '<figure class="swiper-slide s1d-gallery__slide">'
+            . wp_get_attachment_image($id, 'large', false, ['class' => 's1d-gallery__img', 'sizes' => '(max-width: 760px) 100vw, 660px', 'loading' => $index === 0 ? 'eager' : 'lazy', 'decoding' => 'async'])
+            . ($caption !== '' ? '<figcaption>' . esc_html($caption) . '</figcaption>' : '')
+            . '</figure>';
+        if ($multiple) {
+            $thumbs .= '<div class="swiper-slide s1d-gallery__thumb">' . wp_get_attachment_image($id, 'thumbnail', false, ['alt' => '', 'loading' => 'lazy']) . '</div>';
+        }
+    }
+    return '<section class="s1d-modal__section s1d-gallery" data-s1d-gallery>'
+        . '<h3>' . esc_html($title) . '</h3>'
+        . '<div class="s1d-gallery__stage"><div class="swiper s1d-gallery__main"><div class="swiper-wrapper">' . $slides . '</div></div>'
+        . ($multiple
+            ? '<button type="button" class="s1d-gallery__nav s1d-gallery__prev" aria-label="' . esc_attr(s1_text('Föregående bild', 'Previous photo')) . '">' . s1d_icon('chevron-left', 22) . '</button>'
+              . '<button type="button" class="s1d-gallery__nav s1d-gallery__next" aria-label="' . esc_attr(s1_text('Nästa bild', 'Next photo')) . '">' . s1d_icon('chevron-right', 22) . '</button>'
+              . '<span class="s1d-gallery__count" aria-live="polite">1 / ' . count($ids) . '</span>'
+            : '')
+        . '</div>'
+        . ($multiple ? '<div class="swiper s1d-gallery__thumbs" aria-hidden="true"><div class="swiper-wrapper">' . $thumbs . '</div></div>' : '')
+        . '</section>';
+}
+
 function s1_development_event_card(array $event): string {
     $status = $event['past'] ? 'past' : 'upcoming';
     $dialog = 's1d-event-' . (int) $event['id'];
+    $photos = count($event['gallery'] ?? []);
+    $cover = (int) ($event['image_id'] ?: ($event['gallery'][0] ?? 0));
+    $media = $cover > 0
+        ? '<div class="s1d-card__media">' . s1d_image($cover, 's1d-card__img', '(max-width: 767px) 100vw, 340px')
+            . ($photos > 0 ? '<span class="s1d-card__photos">' . s1d_icon('camera', 16) . esc_html(sprintf(s1_text('%d bilder', '%d photos'), $photos)) . '</span>' : '')
+            . '</div>'
+        : '';
     $meta = '';
     if ($event['dates'] !== '') $meta .= '<li>' . s1d_icon('calendar') . '<span>' . esc_html($event['dates']) . '</span></li>';
     if ($event['place'] !== '') $meta .= '<li>' . s1d_icon('pin') . '<span>' . esc_html($event['place']) . '</span></li>';
     if ($event['coach'] !== '') $meta .= '<li class="s1d-card__muted">' . s1d_icon('user') . '<span>' . esc_html(s1_text('Coach', 'Coach')) . ': <strong>' . esc_html($event['coach']) . '</strong></span></li>';
-    return '<article class="s1d-card" data-s1d-status="' . $status . '">'
+    return '<article class="s1d-card' . ($media !== '' ? ' s1d-card--media' : '') . '" data-s1d-status="' . $status . '">'
+        . $media
         . '<div class="s1d-card__top"><span class="s1d-eyebrow">' . esc_html($event['series']) . '</span>'
         . ($event['past']
             ? '<span class="s1d-badge s1d-badge--past">' . esc_html(s1_text('Genomfört', 'Completed')) . '</span>'
@@ -308,10 +349,15 @@ function s1_development_event_dialog(array $event, int $fallback_image, string $
     foreach ($facts as $label => $value) {
         if ($value !== '') $dl .= '<div><dt>' . esc_html($label) . '</dt><dd>' . esc_html($value) . '</dd></div>';
     }
-    $image_id = $event['image_id'] ?: $fallback_image;
+    $gallery_ids = $event['gallery'] ?? [];
+    $image_id = $event['image_id'] ?: ($gallery_ids[0] ?? 0) ?: $fallback_image;
+    $gallery = s1d_gallery($gallery_ids, ($event['gallery_title'] ?? '') !== '' ? $event['gallery_title'] : ($event['past']
+        ? s1_text('Bilder från eventet', 'Photos from the event')
+        : s1_text('Bilder', 'Photos')));
     $body = '<span class="s1d-eyebrow">' . esc_html($event['series']) . '</span>'
         . '<h2 class="s1d-modal__title" id="' . esc_attr($id) . '-title">' . esc_html($event['title']) . '</h2>'
         . ($dl !== '' ? '<dl class="s1d-facts">' . $dl . '</dl>' : '');
+    if ($event['past']) $body .= $gallery;
     if ($event['about'] !== '') {
         $body .= '<div class="s1d-modal__section"><h3>' . esc_html(s1_text('Om eventet', 'About the event')) . '</h3>' . s1d_paragraphs($event['about']) . '</div>';
     }
@@ -327,6 +373,7 @@ function s1_development_event_dialog(array $event, int $fallback_image, string $
             foreach ($event['includes'] as $item) $body .= '<li>' . s1d_icon('check') . '<span>' . esc_html($item) . '</span></li>';
             $body .= '</ul></div>';
         }
+        $body .= $gallery;
         $body .= '<div class="s1d-modal__actions">'
             . '<a class="s1d-btn s1d-btn--light" href="' . esc_url(s1_booking_url(['s1_event' => $event['title'] . ($event['dates'] !== '' ? ' (' . $event['dates'] . ')' : ''), 's1_sport' => $sport_name])) . '">' . esc_html(s1_text('Anmäl intresse', 'Register interest')) . s1d_icon('arrow-up-right', 16) . '</a>'
             . '<a class="s1d-btn s1d-btn--outline" href="' . esc_url(home_url(s1_lang() === 'en' ? '/contact/' : '/kontakt/')) . '">' . esc_html(s1_text('Ställ en fråga', 'Ask a question')) . '</a>'
