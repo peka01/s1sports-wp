@@ -51,44 +51,85 @@ add_filter('enter_title_here', function (string $text, WP_Post $post): string {
     return $post->post_type === 's1_event' ? 'Eventets namn, t.ex. ITF Malmö' : $text;
 }, 10, 2);
 
+add_action('acf/include_field_types', function (): void {
+    require_once __DIR__ . '/acf-gallery-field.php';
+    acf_register_field_type('S1_ACF_Field_Gallery');
+});
+
+/*
+ * The event form follows what the visitor sees: the card in the list, then the box that
+ * opens when they click, then the photos, then what is added after the event.
+ * The event name is the title field above the form.
+ */
 add_action('acf/init', function (): void {
     if (!function_exists('acf_add_local_field_group')) return;
     $half = ['width' => '50'];
+    $date = ['type' => 'date_picker', 'display_format' => 'Y-m-d', 'return_format' => 'Ymd', 'first_day' => 1, 'wrapper' => $half];
+    $text = ['type' => 'textarea', 'new_lines' => ''];
     acf_add_local_field_group([
         'key' => 'group_s1_event',
-        'title' => 'Eventinformation',
+        'title' => 'Eventet',
         'fields' => [
+            ['key' => 'field_s1_event_tab_card', 'label' => '1. Kortet', 'type' => 'tab'],
+            ['key' => 'field_s1_event_card_help', 'label' => '', 'type' => 'message',
+                'message' => 'Det här visas på eventkortet i listan. Eventets namn skriver du i titelfältet ovanför.'],
             ['key' => 'field_s1_event_sport', 'label' => 'Sport', 'name' => 's1_event_sport', 'type' => 'select', 'required' => 1,
-                'instructions' => 'Styr om eventet visas på Development Golf eller Development Tennis.',
+                'instructions' => 'Eventet visas på Development Golf eller Development Tennis.',
                 'choices' => s1_event_sports(), 'default_value' => 'tennis', 'return_format' => 'value', 'wrapper' => $half],
             ['key' => 'field_s1_event_series', 'label' => 'Typ av event', 'name' => 's1_event_series', 'type' => 'text',
-                'instructions' => 'Visas ovanför namnet.', 'placeholder' => 'ITF Junior · U18', 'wrapper' => $half],
-            ['key' => 'field_s1_event_start', 'label' => 'Startdatum', 'name' => 's1_event_start', 'type' => 'date_picker', 'required' => 1,
-                'display_format' => 'Y-m-d', 'return_format' => 'Ymd', 'first_day' => 1, 'wrapper' => $half],
-            ['key' => 'field_s1_event_end', 'label' => 'Slutdatum', 'name' => 's1_event_end', 'type' => 'date_picker',
-                'instructions' => 'Lämna tomt för endagsevent. Eventet flyttas till Genomförda dagen efter.',
-                'display_format' => 'Y-m-d', 'return_format' => 'Ymd', 'first_day' => 1, 'wrapper' => $half],
+                'instructions' => 'Liten text ovanför namnet.', 'placeholder' => 'ITF Junior · U18', 'wrapper' => $half],
+            ['key' => 'field_s1_event_image', 'label' => 'Eventbild', 'name' => 's1_event_image', 'type' => 'image',
+                'instructions' => 'Överst på kortet och i rutan. Lämna tomt för att använda första bilden under fliken Bilder.',
+                'return_format' => 'id', 'preview_size' => 'medium', 'library' => 'all'],
+            ['key' => 'field_s1_event_start', 'label' => 'Startdatum', 'name' => 's1_event_start', 'required' => 1] + $date,
+            ['key' => 'field_s1_event_end', 'label' => 'Slutdatum', 'name' => 's1_event_end',
+                'instructions' => 'Lämna tomt för endagsevent. Eventet flyttas till Genomförda dagen efter.'] + $date,
             ['key' => 'field_s1_event_place', 'label' => 'Plats', 'name' => 's1_event_place', 'type' => 'text', 'placeholder' => 'Malmö, Sverige', 'wrapper' => $half],
             ['key' => 'field_s1_event_coach', 'label' => 'Coach', 'name' => 's1_event_coach', 'type' => 'text', 'wrapper' => $half],
-            ['key' => 'field_s1_event_fee', 'label' => 'Avgift', 'name' => 's1_event_fee', 'type' => 'text', 'placeholder' => '450 kr/dag + coachkostnader', 'wrapper' => $half],
-            ['key' => 'field_s1_event_age', 'label' => 'Ålder', 'name' => 's1_event_age', 'type' => 'text', 'placeholder' => 'U18', 'wrapper' => $half],
-            ['key' => 'field_s1_event_deadline', 'label' => 'Sista anmälan', 'name' => 's1_event_deadline', 'type' => 'text', 'placeholder' => '1 augusti', 'wrapper' => $half],
-            ['key' => 'field_s1_event_summary', 'label' => 'Kort beskrivning', 'name' => 's1_event_summary', 'type' => 'textarea', 'rows' => 2, 'new_lines' => '',
-                'instructions' => 'Visas på eventkortet. Håll den till en eller två meningar.'],
-            ['key' => 'field_s1_event_about', 'label' => 'Om eventet', 'name' => 's1_event_about', 'type' => 'textarea', 'rows' => 6, 'new_lines' => '',
-                'instructions' => 'Visas i rutan som öppnas när besökaren klickar på eventet.'],
-            ['key' => 'field_s1_event_includes', 'label' => 'Det här ingår', 'name' => 's1_event_includes', 'type' => 'textarea', 'rows' => 4, 'new_lines' => '',
-                'instructions' => 'En punkt per rad. Visas för kommande event.'],
-            ['key' => 'field_s1_event_result', 'label' => 'Resultat och höjdpunkter', 'name' => 's1_event_result', 'type' => 'textarea', 'rows' => 4, 'new_lines' => '',
-                'instructions' => 'Fyll i efter eventet. Visas när eventet är genomfört.'],
+            ['key' => 'field_s1_event_summary', 'label' => 'Kort beskrivning', 'name' => 's1_event_summary', 'rows' => 2,
+                'instructions' => 'En eller två meningar.'] + $text,
+
+            ['key' => 'field_s1_event_tab_box', 'label' => '2. Rutan', 'type' => 'tab'],
+            ['key' => 'field_s1_event_box_help', 'label' => '', 'type' => 'message',
+                'message' => 'Rutan öppnas när besökaren klickar på eventet. Den visar också datum, plats och coach från fliken Kortet.'],
+            ['key' => 'field_s1_event_fee', 'label' => 'Avgift', 'name' => 's1_event_fee', 'type' => 'text', 'placeholder' => '450 kr/dag + coachkostnader', 'wrapper' => ['width' => '34']],
+            ['key' => 'field_s1_event_age', 'label' => 'Ålder', 'name' => 's1_event_age', 'type' => 'text', 'placeholder' => 'U18', 'wrapper' => ['width' => '33']],
+            ['key' => 'field_s1_event_deadline', 'label' => 'Sista anmälan', 'name' => 's1_event_deadline', 'type' => 'text', 'placeholder' => '1 augusti', 'wrapper' => ['width' => '33'],
+                'instructions' => 'Visas bara för kommande event.'],
+            ['key' => 'field_s1_event_about', 'label' => 'Om eventet', 'name' => 's1_event_about', 'rows' => 6,
+                'instructions' => 'Tom rad ger nytt stycke.'] + $text,
+            ['key' => 'field_s1_event_includes', 'label' => 'Det här ingår', 'name' => 's1_event_includes', 'rows' => 4,
+                'instructions' => 'En punkt per rad. Visas bara för kommande event, ovanför knappen Anmäl intresse.'] + $text,
+
+            ['key' => 'field_s1_event_tab_photos', 'label' => '3. Bilder', 'type' => 'tab'],
+            ['key' => 'field_s1_event_gallery_title', 'label' => 'Rubrik för bilderna', 'name' => 's1_event_gallery_title', 'type' => 'text',
+                'instructions' => 'Lämna tomt för "Bilder från eventet" (genomförda event) eller "Bilder" (kommande).', 'placeholder' => 'Om arenan'],
+            ['key' => 'field_s1_event_gallery', 'label' => 'Bildspel', 'name' => 's1_event_gallery', 'type' => 's1_gallery',
+                'instructions' => 'Visas som bildspel i rutan. Lägg till bilder på banan eller arenan inför eventet, och bilder från eventet efteråt. Dra för att ändra ordning. Bildtexten hämtas från mediabiblioteket.'],
+
+            ['key' => 'field_s1_event_tab_after', 'label' => '4. Efter eventet', 'type' => 'tab'],
+            ['key' => 'field_s1_event_result', 'label' => 'Resultat och höjdpunkter', 'name' => 's1_event_result', 'rows' => 5,
+                'instructions' => 'Visas i rutan när eventet är genomfört. Lägg gärna till bilder från eventet under fliken Bilder.'] + $text,
         ],
         'location' => [[['param' => 'post_type', 'operator' => '==', 'value' => 's1_event']]],
         'position' => 'acf_after_title',
         'style' => 'default',
         'label_placement' => 'top',
+        'hide_on_screen' => ['featured_image'],
         'active' => true,
     ]);
 });
+
+/** Events made before the form had its own image field used the featured image: show it in the field until saved. */
+add_filter('acf/load_value/key=field_s1_event_image', function ($value, $post_id) {
+    return $value ?: ((int) get_post_thumbnail_id((int) $post_id) ?: $value);
+}, 10, 2);
+
+function s1_event_image_id(int $post_id): int {
+    return metadata_exists('post', $post_id, 's1_event_image')
+        ? (int) s1_event_meta($post_id, 's1_event_image')
+        : (int) get_post_thumbnail_id($post_id);
+}
 
 function s1_event_meta(int $post_id, string $name): string {
     $value = get_post_meta($post_id, $name, true);
@@ -156,7 +197,7 @@ function s1_get_events(string $sport): array {
             'about' => s1_event_meta($id, 's1_event_about'),
             'includes' => $includes,
             'result' => s1_event_meta($id, 's1_event_result'),
-            'image_id' => (int) get_post_thumbnail_id($post),
+            'image_id' => s1_event_image_id($id),
             'gallery' => s1_event_gallery_ids($id),
             'gallery_title' => s1_event_meta($id, 's1_event_gallery_title'),
             'past' => s1_event_is_past($start, $end),
@@ -171,59 +212,13 @@ function s1_get_events(string $sport): array {
 }
 
 /*
- * Photo gallery: a list of media library images per event, stored as comma-separated
- * attachment IDs in s1_event_gallery. (ACF's gallery field needs ACF PRO.)
+ * Photo gallery: media library images per event, stored as comma-separated attachment IDs
+ * in s1_event_gallery by the S1 gallery field (acf-gallery-field.php; ACF's own gallery needs ACF PRO).
  */
 function s1_event_gallery_ids(int $post_id): array {
     $ids = array_filter(array_map('absint', explode(',', s1_event_meta($post_id, 's1_event_gallery'))));
     return array_values(array_unique(array_filter($ids, static fn(int $id): bool => wp_attachment_is_image($id))));
 }
-
-add_action('add_meta_boxes_s1_event', function (): void {
-    add_meta_box('s1-event-gallery', 'Bilder', 's1_event_gallery_box', 's1_event', 'normal', 'default');
-});
-
-function s1_event_gallery_box(WP_Post $post): void {
-    wp_nonce_field('s1_event_gallery', 's1_event_gallery_nonce');
-    $ids = s1_event_gallery_ids((int) $post->ID);
-    echo '<div class="s1-gallery-box' . ($ids ? ' has-images' : '') . '">';
-    echo '<p class="description">Bilderna visas som ett bildspel när besökaren öppnar eventet. Lägg till bilder på banan eller arenan inför eventet, och bilder från eventet efteråt. Dra för att ändra ordning. Bildtexten hämtas från mediabiblioteket.</p>';
-    echo '<ul class="s1-gallery-list">';
-    foreach ($ids as $id) {
-        echo '<li data-id="' . (int) $id . '">' . wp_get_attachment_image($id, 'thumbnail', false, ['alt' => '']) . '<button type="button" class="s1-gallery-remove" aria-label="Ta bort bild">&times;</button></li>';
-    }
-    echo '</ul>';
-    echo '<p class="s1-gallery-empty">Inga bilder ännu.</p>';
-    echo '<p><button type="button" class="button s1-gallery-add">Lägg till bilder</button></p>';
-    echo '<input type="hidden" name="s1_event_gallery" value="' . esc_attr(implode(',', $ids)) . '">';
-    echo '</div>';
-    $title = s1_event_meta((int) $post->ID, 's1_event_gallery_title');
-    echo '<p><label for="s1-event-gallery-title"><strong>Rubrik för bilderna</strong></label><br>';
-    echo '<input type="text" class="widefat" id="s1-event-gallery-title" name="s1_event_gallery_title" value="' . esc_attr($title) . '" placeholder="Bilder från eventet / Om anläggningen">';
-    echo '<span class="description">Lämna tomt för "Bilder från eventet" (genomförda event) eller "Bilder" (kommande).</span></p>';
-}
-
-add_action('save_post_s1_event', function (int $post_id): void {
-    if (!isset($_POST['s1_event_gallery_nonce']) || !wp_verify_nonce(sanitize_key(wp_unslash($_POST['s1_event_gallery_nonce'])), 's1_event_gallery')) return;
-    if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || wp_is_post_revision($post_id) || !current_user_can('edit_post', $post_id)) return;
-    $raw = isset($_POST['s1_event_gallery']) ? sanitize_text_field(wp_unslash($_POST['s1_event_gallery'])) : '';
-    $ids = array_values(array_unique(array_filter(array_map('absint', explode(',', $raw)), static fn(int $id): bool => wp_attachment_is_image($id))));
-    if ($ids) update_post_meta($post_id, 's1_event_gallery', implode(',', $ids));
-    else delete_post_meta($post_id, 's1_event_gallery');
-    $title = isset($_POST['s1_event_gallery_title']) ? sanitize_text_field(wp_unslash($_POST['s1_event_gallery_title'])) : '';
-    if ($title !== '') update_post_meta($post_id, 's1_event_gallery_title', $title);
-    else delete_post_meta($post_id, 's1_event_gallery_title');
-});
-
-add_action('admin_enqueue_scripts', function (string $hook): void {
-    $screen = get_current_screen();
-    if (!$screen || $screen->post_type !== 's1_event' || !in_array($hook, ['post.php', 'post-new.php'], true)) return;
-    $base = plugin_dir_url(dirname(__DIR__) . '/s1sports-content.php');
-    $version = '0.6.0';
-    wp_enqueue_media();
-    wp_enqueue_style('s1-event-gallery', $base . 'assets/admin-event-gallery.css', [], $version);
-    wp_enqueue_script('s1-event-gallery', $base . 'assets/admin-event-gallery.js', ['jquery', 'jquery-ui-sortable'], $version, true);
-});
 
 add_filter('manage_s1_event_posts_columns', function (array $columns): array {
     return [
