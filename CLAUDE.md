@@ -31,6 +31,7 @@ WordPress Playground runs the theme and plugin locally with sample content (`dev
 
 - The live site is production. Ask for an explicit go-ahead before every change to it, and say exactly what will change.
 - `scripts/wp.mjs` refuses anything but GET unless `--write` is passed. `--en` targets the English domain.
+- In Git Bash, a REST path like `/wp/v2/pages/548` is rewritten to a Windows path unless the command runs with `MSYS_NO_PATHCONV=1` (or the leading slash is left out); `wp.mjs` refuses such paths.
 - Swedish and English versions are separate WPML-linked posts with different IDs; change both when content should match.
 - After theme changes run `node scripts/verify.mjs` and `node --check s1sports-theme/assets/mirror.js`.
 

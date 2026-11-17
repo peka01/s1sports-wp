@@ -88,6 +88,7 @@ if (command === 'check') {
   if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) fail(`Unknown command: ${command}`);
   const path = rest[0];
   if (!path) fail('A REST path is required, for example /wp/v2/pages');
+  if (/^[A-Za-z]:[\\/]/.test(path)) fail(`"${path}" looks like a Windows path: Git Bash rewrote the REST path. Run with MSYS_NO_PATHCONV=1, or leave out the leading slash (wp/v2/pages/123).`);
   let body = rest[1];
   if (body?.startsWith('@')) body = readFileSync(body.slice(1), 'utf8');
   if (body) {
