@@ -1,0 +1,21 @@
+<wpml-config>
+  <custom-fields>
+    <custom-field action="copy">s1_dev_sport</custom-field>
+    <custom-field action="translate">s1_dev_heading_bold</custom-field>
+    <custom-field action="translate">s1_dev_heading_italic</custom-field>
+    <custom-field action="translate">s1_dev_list_bold</custom-field>
+    <custom-field action="translate">s1_dev_list_italic</custom-field>
+    <custom-field action="copy">s1_card_image</custom-field>
+    <custom-field action="translate">s1_card_label</custom-field>
+    <custom-field action="translate">s1_card_title</custom-field>
+    <custom-field action="translate">s1_card_text</custom-field>
+    <custom-field action="copy">s1_dev_cta_image</custom-field>
+    <custom-field action="translate">s1_dev_cta_bold</custom-field>
+    <custom-field action="translate">s1_dev_cta_italic</custom-field>
+    <custom-field action="translate">s1_dev_cta_text</custom-field>
+    <custom-field action="translate">s1_dev_cta_button</custom-field>
+    <custom-field action="translate">s1_jr_heading_bold</custom-field>
+    <custom-field action="translate">s1_jr_heading_italic</custom-field>
+    <custom-field action="translate">s1_jr_intro</custom-field>
+  </custom-fields>
+</wpml-config>

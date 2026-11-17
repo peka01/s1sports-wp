@@ -1,0 +1,12 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/junior-utveckling/",
+  "preferredVersions": { "php": "8.3", "wp": "latest" },
+  "steps": [
+    { "step": "setSiteLanguage", "language": "sv_SE" },
+    { "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "advanced-custom-fields" } },
+    { "step": "activatePlugin", "pluginPath": "s1sports-content/s1sports-content.php" },
+    { "step": "activateTheme", "themeFolderName": "s1sports-theme" },
+    { "step": "runPHP", "code": "<?php require '/wordpress/wp-load.php'; require '/wordpress/wp-content/s1-dev/seed.php';" }
+  ]
+}

@@ -2,6 +2,7 @@
 defined('ABSPATH') || exit;
 require_once get_template_directory() . '/inc/snapshot.php';
 require_once get_template_directory() . '/inc/athletes.php';
+require_once get_template_directory() . '/inc/development.php';
 add_action('after_setup_theme', function () {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
@@ -9,7 +10,7 @@ add_action('after_setup_theme', function () {
     register_nav_menus(['primary' => __('Primary menu', 's1sports')]);
 });
 add_action('wp_enqueue_scripts', function () {
-    if (s1_snapshot_details()) return;
+    if (s1_snapshot_details() || s1_dev_is_page()) return;
     wp_enqueue_style('s1sports', get_stylesheet_uri(), [], '0.1.0');
     wp_enqueue_script('s1sports', get_template_directory_uri() . '/assets/theme.js', [], '0.1.0', true);
 });

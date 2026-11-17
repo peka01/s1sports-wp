@@ -1,11 +1,25 @@
 <wpml-config>
   <custom-types>
     <custom-type translate="1">atleter</custom-type>
+    <custom-type translate="1">s1_event</custom-type>
   </custom-types>
   <custom-fields>
     <custom-field action="translate">s1_sport</custom-field>
     <custom-field action="translate">s1_college</custom-field>
     <custom-field action="copy">s1_featured</custom-field>
     <custom-field action="copy">s1_display_order</custom-field>
+    <custom-field action="copy">s1_event_sport</custom-field>
+    <custom-field action="copy">s1_event_start</custom-field>
+    <custom-field action="copy">s1_event_end</custom-field>
+    <custom-field action="translate">s1_event_series</custom-field>
+    <custom-field action="translate">s1_event_place</custom-field>
+    <custom-field action="copy">s1_event_coach</custom-field>
+    <custom-field action="translate">s1_event_fee</custom-field>
+    <custom-field action="translate">s1_event_age</custom-field>
+    <custom-field action="translate">s1_event_deadline</custom-field>
+    <custom-field action="translate">s1_event_summary</custom-field>
+    <custom-field action="translate">s1_event_about</custom-field>
+    <custom-field action="translate">s1_event_includes</custom-field>
+    <custom-field action="translate">s1_event_result</custom-field>
   </custom-fields>
 </wpml-config>

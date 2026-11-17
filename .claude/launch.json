@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "playground",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y", "@wp-playground/cli@latest", "server",
+        "--port=9400",
+        "--login",
+        "--blueprint=dev/blueprint.json",
+        "--mount-dir", "s1sports-theme", "/wordpress/wp-content/themes/s1sports-theme",
+        "--mount-dir", "s1sports-content", "/wordpress/wp-content/plugins/s1sports-content",
+        "--mount-dir", "dev", "/wordpress/wp-content/s1-dev",
+        "--mount-dir", "dev/mu-plugins/s1-dev-autologin.php", "/wordpress/wp-content/mu-plugins/s1-dev-autologin.php"
+      ],
+      "port": 9400
+    }
+  ]
+}

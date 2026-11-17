@@ -2,13 +2,14 @@
 /**
  * Plugin Name: S1 Sports Content
  * Description: Athlete content model for the S1 Sports theme.
- * Version: 0.4.0
+ * Version: 0.5.0
  * Requires PHP: 8.0
  * Text Domain: s1sports-content
  */
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/inc/contact.php';
+require_once __DIR__ . '/inc/events.php';
 
 add_action('init', function () {
     // The production site already owns this post type. Register it only in fresh local installs.

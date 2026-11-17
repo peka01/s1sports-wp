@@ -20,6 +20,17 @@ Installera och aktivera även insticksprogrammet `s1sports-content` och ACF. Den
 
 `s1sports-content/wpml-config.xml` anger att `atleter` ska översättas, att idrott och college/status ska översättas och att startsidesmarkering och ordning ska kopieras mellan språken. Koppla befintliga svenska och engelska profiler som översättningar i WPML. WPML har inte kunnat testas i den lokala installationen eftersom licensierad WPML-kod inte finns där.
 
+## Development Golf och Tennis
+
+Allt i den här delen redigeras i wp-admin.
+
+- **Event:** menyn **Event** (från insticksprogrammet `s1sports-content`). Varje event har sport, typ, start- och slutdatum, plats, coach, avgift, ålder, sista anmälan, kort beskrivning, "Om eventet", "Det här ingår" (en punkt per rad), resultat och en eventbild. Ett event flyttas automatiskt till **Genomförda** dagen efter slutdatumet.
+- **Development-sidor:** vanliga sidor med mallen **Development (sport)**. Sidans utvalda bild är toppbilden, texten i redigeraren är ingressen, och fälten under redigeraren styr sport, rubriker, kortet på Juniorutveckling (egen kortbild, rubrik och text) och avslutningsrutan.
+- **Juniorutveckling:** sektionen under toppbilden visar ett kort per publicerad Development-sida. Rubrik och text redigeras i fälten på sidan Juniorutveckling.
+- **Anmäl intresse** leder till Boka möte med eventets namn och sport ifyllda i formuläret.
+
+Engelska versioner skapas som WPML-översättningar av event och sidor. `wpml-config.xml` i temat och insticksprogrammet anger vilka fält som översätts och vilka som kopieras (sport, datum, bilder).
+
 ## Kvar innan skarp installation
 
 - Jämför samtliga 18 sidversioner vid dator- och mobilbredd och rätta varje skillnad.

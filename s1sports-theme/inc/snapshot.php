@@ -5,14 +5,18 @@ function s1_snapshot_details(): ?array {
     if (!is_page() && !is_front_page()) return null;
     $locale = s1_lang() === 'en' ? 'en' : 'sv';
     $slug = is_front_page() ? 'home' : get_post_field('post_name', get_queried_object_id());
-    $slug = sanitize_file_name((string) $slug);
+    return s1_snapshot_entry($locale, (string) $slug);
+}
+
+function s1_snapshot_entry(string $locale, string $slug): ?array {
+    $slug = sanitize_file_name($slug);
     $file = get_template_directory() . '/snapshots/' . $locale . '-' . $slug . '.html';
     if (!is_readable($file)) return null;
     $manifest_file = get_template_directory() . '/snapshots/manifest.json';
     $manifest = json_decode((string) file_get_contents($manifest_file), true);
     foreach ((array) $manifest as $item) {
         if ($item['locale'] === $locale && $item['slug'] === $slug) {
-            return ['file' => $file, 'css' => $item['css'], 'locale' => $locale];
+            return ['file' => $file, 'css' => $item['css'], 'locale' => $locale, 'slug' => $slug];
         }
     }
     return null;
@@ -53,8 +57,16 @@ function s1_render_snapshot_if_available(): bool {
     $html = (string) file_get_contents($details['file']);
     $html = str_replace('{{THEME}}', get_template_directory_uri(), $html);
     $html = s1_render_dynamic_athletes($html);
-    $social_div = $details['locale'] === 'en' ? '143' : '138';
-    $social_divider = $details['locale'] === 'en' ? '159' : '127';
+    $with_development = in_array($details['slug'], ['junior-utveckling', 'junior-development'], true);
+    if ($with_development) $html = s1_render_development_cards($html);
+    s1_output_snapshot_document(s1_prepare_snapshot_html($html, $details['locale']), $details['css'], $details['locale'], $with_development);
+    return true;
+}
+
+/** Post-processing shared by every page built from a snapshot. */
+function s1_prepare_snapshot_html(string $html, string $locale): string {
+    $social_div = $locale === 'en' ? '143' : '138';
+    $social_divider = $locale === 'en' ? '159' : '127';
     $html = preg_replace('~<div class="bde-div-108-' . $social_div . ' bde-div">[\s\S]*?(?=<div class="bde-fancy-divider-108-' . $social_divider . ' bde-fancy-divider">)~', '', $html, 1);
     $html = preg_replace('/<div role="navigation" aria-label="(?:Språkväljare|Language Switcher|Language switcher)" class="wpml-ls-statics-shortcode_actions[\s\S]*?<\/div>/i', '<!--S1_LANGUAGE_SWITCHER-->', $html, 1);
     $html = str_replace('<!--S1_LANGUAGE_SWITCHER-->', s1_mirror_switcher_html(), $html);
@@ -73,14 +85,48 @@ function s1_render_snapshot_if_available(): bool {
     if (in_array(get_post_field('post_name', get_queried_object_id()), ['boka-mote', 'book-a-meeting'], true)) {
         $form_attributes = ' data-s1-contact="1" data-s1-endpoint="' . esc_url(admin_url('admin-ajax.php')) . '" data-s1-nonce="' . esc_attr(wp_create_nonce('s1_contact')) . '"';
         $html = preg_replace('/<form\b/i', '<form' . $form_attributes, $html, 1);
+        $html = s1_prefill_booking_form($html);
     }
-    ?><!doctype html><html <?php if (has_filter('wpml_current_language')) language_attributes(); else echo 'lang="' . esc_attr($details['locale'] === 'en' ? 'en-US' : 'sv-SE') . '"'; ?>><head><meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><?php
-    foreach ($details['css'] as $css) {
-        echo '<link rel="stylesheet" href="' . esc_url(get_template_directory_uri() . '/' . $css) . '">';
+    return $html;
+}
+
+/**
+ * "Anmäl intresse" on an event links to the booking page with ?s1_event=…&s1_sport=…;
+ * fill those into the form so the request says which event it is about.
+ */
+function s1_prefill_booking_form(string $html): string {
+    $read = static function (string $key): string {
+        if (!isset($_GET[$key]) || !is_string($_GET[$key])) return '';
+        return mb_substr(sanitize_text_field(wp_unslash($_GET[$key])), 0, 150);
+    };
+    $event = $read('s1_event');
+    $sport = $read('s1_sport');
+    if ($sport !== '') {
+        $html = preg_replace_callback('/(<input\b[^>]*name="fields\[osycwv\]"[^>]*?)value=""/', static function (array $match) use ($sport): string {
+            return $match[1] . 'value="' . esc_attr($sport) . '"';
+        }, $html, 1);
     }
-    echo '<link rel="stylesheet" href="' . esc_url(get_template_directory_uri() . '/assets/mirror.css?ver=0.9.8') . '">';
+    if ($event !== '') {
+        $text = s1_text('Intresseanmälan: ', 'Registration of interest: ') . $event . "\n\n";
+        $html = preg_replace_callback('/(<textarea\b[^>]*name="fields\[message\]"[^>]*>)\s*(<\/textarea>)/', static function (array $match) use ($text): string {
+            return $match[1] . esc_textarea($text) . $match[2];
+        }, $html, 1);
+    }
+    return $html;
+}
+
+function s1_output_snapshot_document(string $html, array $css_files, string $locale, bool $with_development = false): void {
+    $theme_uri = get_template_directory_uri();
+    $version = (string) wp_get_theme(get_template())->get('Version');
+    ?><!doctype html><html <?php if (has_filter('wpml_current_language')) language_attributes(); else echo 'lang="' . esc_attr($locale === 'en' ? 'en-US' : 'sv-SE') . '"'; ?>><head><meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><?php
+    foreach ($css_files as $css) {
+        echo '<link rel="stylesheet" href="' . esc_url($theme_uri . '/' . $css) . '">';
+    }
+    echo '<link rel="stylesheet" href="' . esc_url($theme_uri . '/assets/mirror.css?ver=0.9.8') . '">';
     echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&amp;display=swap">';
+    if ($with_development) echo '<link rel="stylesheet" href="' . esc_url($theme_uri . '/assets/development.css?ver=' . rawurlencode($version)) . '">';
     wp_head();
-    ?></head><body <?php body_class('breakdance'); ?>><?php wp_body_open(); echo $html; wp_footer(); ?><script src="<?php echo esc_url(get_template_directory_uri() . '/assets/swiper-bundle.min.js'); ?>"></script><script src="<?php echo esc_url(get_template_directory_uri() . '/assets/mirror.js?ver=0.9.0'); ?>"></script></body></html><?php
-    return true;
+    ?></head><body <?php body_class('breakdance'); ?>><?php wp_body_open(); echo $html; wp_footer(); ?><script src="<?php echo esc_url($theme_uri . '/assets/swiper-bundle.min.js'); ?>"></script><script src="<?php echo esc_url($theme_uri . '/assets/mirror.js?ver=0.9.0'); ?>"></script><?php
+    if ($with_development) echo '<script src="' . esc_url($theme_uri . '/assets/development.js?ver=' . rawurlencode($version)) . '"></script>';
+    ?></body></html><?php
 }
