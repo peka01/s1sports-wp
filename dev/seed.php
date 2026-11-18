@@ -137,4 +137,15 @@ foreach ($events as [$sport, $title, $series, $start_date, $end_date, $place, $f
         ],
     ]);
 }
+// Athletes for the Våra idrottare filter (sport + year to the USA / signed with a school).
+foreach ([
+    ['Elton Test', 'golf', 'College Recruit 2027', 'golf1'], ['Theo Test', 'golf', 'Bakersfield College', 'golf_card'],
+    ['Lisa Test', 'tennis', 'College Recruit 2028', 'tennis1'], ['Linea Test', 'tennis', 'University of Georgia', 'tennis_hero'],
+    ['Love Test', 'tennis', 'College Recruit 2027', 'tennis2'], ['Isa Test', 'friidrott', 'College Recruit 2028', 'tennis3'],
+    ['Oscar Test', 'fotboll', 'Keiser University', 'golf_hero'], ['Annie Test', 'ovrigt', 'Wake Forest University', 'tennis_card'],
+] as $i => [$name, $sport, $school, $image]) {
+    $athlete = wp_insert_post(['post_type' => 'atleter', 'post_status' => 'publish', 'post_title' => $name,
+        'meta_input' => ['namn' => $name, 'sport' => $sport, 'skola' => $school, 's1_display_order' => $i + 1]]);
+    if ($img[$image] ?? 0) set_post_thumbnail($athlete, $img[$image]);
+}
 flush_rewrite_rules();

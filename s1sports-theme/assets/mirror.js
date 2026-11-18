@@ -132,15 +132,29 @@ document.addEventListener('DOMContentLoaded', () => {
       } finally { if (button) button.disabled = false; }
     });
   });
-  const filters = document.querySelectorAll('#acf-filter-group .icon-filter-btn');
+  // Våra idrottare: filter on sport (buttons) and on year to the USA / signed (dropdown) together.
+  const athleteFilter = document.querySelector('#s1a-filter');
   const athleteGrid = document.querySelector('#my-ajax-loop');
-  if (athleteGrid && filters.length) filters.forEach(button => {
-    button.addEventListener('click', () => {
-      const value = button.dataset.value || '';
-      filters.forEach(item => item.classList.toggle('active', item === button));
+  if (athleteFilter && athleteGrid) {
+    const sportButtons = athleteFilter.querySelectorAll('[data-s1a-sport]');
+    const statusSelect = athleteFilter.querySelector('[data-s1a-status]');
+    const empty = document.querySelector('.s1a-empty');
+    let sport = '';
+    const apply = () => {
+      const status = statusSelect ? statusSelect.value : '';
+      let shown = 0;
       athleteGrid.querySelectorAll('.athlete-card-wrapper').forEach(card => {
-        card.hidden = Boolean(value) && card.dataset.sport !== value;
+        const visible = (!sport || card.dataset.sport === sport) && (!status || card.dataset.status === status);
+        card.hidden = !visible;
+        if (visible) shown += 1;
       });
-    });
-  });
+      if (empty) empty.hidden = shown > 0;
+    };
+    sportButtons.forEach(button => button.addEventListener('click', () => {
+      sport = button.dataset.s1aSport || '';
+      sportButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      apply();
+    }));
+    statusSelect?.addEventListener('change', apply);
+  }
 });

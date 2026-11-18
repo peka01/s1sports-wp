@@ -2,13 +2,13 @@
 /**
  * Plugin Name: S1 Sports Content
  * Description: Athletes, events and the meeting form for the S1 Sports theme.
- * Version: 0.8.1
+ * Version: 0.9.0
  * Requires PHP: 8.0
  * Text Domain: s1sports-content
  */
 defined('ABSPATH') || exit;
 
-const S1_CONTENT_VERSION = '0.8.1';
+const S1_CONTENT_VERSION = '0.9.0';
 
 require_once __DIR__ . '/inc/contact.php';
 require_once __DIR__ . '/inc/events.php';
@@ -42,4 +42,15 @@ add_action('acf/init', function () {
         'style' => 'default',
         'active' => true,
     ]);
+});
+
+/*
+ * The live athlete field group "Atleter" (made in wp-admin) offers fotboll, tennis, golf, hockey
+ * and ovrigt. Add friidrott here so it is available without editing that field group.
+ */
+add_filter('acf/load_field/key=field_69f9e0813226b', function ($field) {
+    if (is_array($field) && isset($field['choices']) && is_array($field['choices']) && !isset($field['choices']['friidrott'])) {
+        $field['choices']['friidrott'] = 'friidrott';
+    }
+    return $field;
 });
