@@ -6,6 +6,7 @@ require_once get_template_directory() . '/inc/development.php';
 require_once get_template_directory() . '/inc/page-content.php';
 require_once get_template_directory() . '/inc/team.php';
 require_once get_template_directory() . '/inc/site-parts.php';
+require_once get_template_directory() . '/inc/guide.php';
 add_action('after_setup_theme', function () {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');

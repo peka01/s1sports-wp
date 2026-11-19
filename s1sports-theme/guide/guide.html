@@ -1,0 +1,250 @@
+<!-- Emma's guide, shown in wp-admin under "Instruktioner" (inc/guide.php). {{IMG}} is the folder guide/img/ in the theme. Keep it up to date when the forms change. -->
+<p class="s1g-lead">Här står hur du ändrar event, sidor, menyn och sidfoten på s1sports.se och s1sports.co. Allt görs här i wp-admin.</p>
+
+<nav class="s1g-toc" aria-label="Innehåll">
+<strong>Innehåll</strong>
+<ol>
+<li><a href="#hitta">Var ändrar jag vad?</a></li>
+<li><a href="#utkast">Utkast och publicering</a></li>
+<li><a href="#nytt-event">Skapa ett nytt event</a></li>
+<li><a href="#falten">Var syns fälten i ett event?</a></li>
+<li><a href="#bilder">Bilder och bildspel</a></li>
+<li><a href="#development">Ändra Development-sidorna</a></li>
+<li><a href="#sidor">Ändra texter och bilder på de andra sidorna</a></li>
+<li><a href="#team">Vårt team på Om oss</a></li>
+<li><a href="#meny">Ändra menyn och sidfoten</a></li>
+<li><a href="#engelska">Engelska versioner</a></li>
+<li><a href="#svar">Snabba svar</a></li>
+</ol>
+</nav>
+
+<h2 id="hitta">Var ändrar jag vad?</h2>
+<table class="widefat striped">
+<thead><tr><th>Det här vill du ändra</th><th>Här gör du det i wp-admin</th></tr></thead>
+<tbody>
+<tr><td>Ett event</td><td>Menyn <strong>Event</strong></td></tr>
+<tr><td>Text och bilder på Development Golf eller Tennis</td><td><strong>Sidor</strong> → Development Golf / Development Tennis</td></tr>
+<tr><td>Korten Golf och Tennis på Juniorutveckling</td><td>På Development-sidan, fliken <strong>4. Kort på Juniorutveckling</strong></td></tr>
+<tr><td>Rubriken ovanför korten</td><td><strong>Sidor</strong> → Juniorutveckling</td></tr>
+<tr><td>Texter och bilder på Start, Juniorutveckling och de andra sidorna</td><td><strong>Sidor</strong> → sidan, rutan <strong>Innehåll på sidan</strong></td></tr>
+<tr><td>Teamet på Om oss</td><td><strong>Sidor</strong> → Om oss, fliken <strong>Vårt team</strong></td></tr>
+<tr><td>Menyn högst upp och sidfoten längst ner</td><td><strong>Meny och sidfot</strong> i vänstermenyn</td></tr>
+</tbody>
+</table>
+<p>Text inom [hakparenteser] är något som ska fyllas i, till exempel [Pris] eller [Datum].</p>
+
+<h2 id="utkast">Utkast och publicering</h2>
+<p>Ett utkast syns bara för dig. Besökarna ser det först när du klickar på <strong>Publicera</strong>.</p>
+<ul>
+<li><strong>Spara utkast</strong>: sparar utan att något syns på sajten.</li>
+<li><strong>Förhandsgranska</strong>: visar hur en sida ser ut innan den är publicerad.</li>
+<li><strong>Publicera</strong>: syns direkt på sajten.</li>
+<li><strong>Gör om till utkast</strong>: klicka på <strong>Redigera</strong> vid Status, välj <strong>Utkast</strong>, klicka <strong>OK</strong> och sedan <strong>Uppdatera</strong>. Det försvinner direkt från sajten.</li>
+</ul>
+<p>Tre saker att veta:</p>
+<ol>
+<li><strong>Ett event har ingen egen sida.</strong> Det syns bara i listan på Development-sidan, och bara när det är publicerat. När du förhandsgranskar sidan syns alltså inte event som är utkast.</li>
+<li><strong>Publicera event först, sedan sidan.</strong> Om sidan är publicerad men inga event, står det "Inga event publicerade ännu".</li>
+<li><strong>Svenska och engelska hänger ihop.</strong> När du publicerar ett event, eller gör om det till utkast, kan samma sak hända med den engelska versionen. Titta i listan <strong>Event</strong> efteråt.</li>
+</ol>
+
+<h2 id="nytt-event">Skapa ett nytt event</h2>
+<p>Det enklaste är att kopiera ett event som redan finns. Gå till <strong>Event</strong>, håll musen över ett event och klicka på <strong>Duplicera Event</strong>. Kopian blir ett utkast som du ändrar i.</p>
+<figure><img src="{{IMG}}07-admin-eventlista.jpg" alt="Listan Event i wp-admin med sport, datum, status och antal bilder"></figure>
+<p>Vill du börja från noll klickar du på <strong>Lägg till nytt event</strong>. Sedan gör du så här:</p>
+<ol>
+<li>Skriv eventets namn i fältet högst upp, till exempel <em>ITF Malmö</em>.</li>
+<li>Fyll i flikarna under namnet, i tur och ordning. Flikarna följer det besökaren ser:
+<ul>
+<li><strong>1. Listan</strong>: sport, typ av event, eventbild, datum, plats och en kort beskrivning.</li>
+<li><strong>2. Rutan</strong>: avgift, ålder, sista anmälan, Om eventet och Det här ingår.</li>
+<li><strong>3. Efter eventet</strong>: resultat och höjdpunkter. Den fyller du i när eventet har varit.</li>
+<li><strong>4. Bilder</strong>: bildspelet och dess rubrik. Bilderna visas sist i rutan, efter texterna.</li>
+</ul></li>
+<li>Klicka på <strong>Spara utkast</strong>.</li>
+<li>Klicka på <strong>Publicera</strong> när allt stämmer.</li>
+</ol>
+<figure><img src="{{IMG}}08-admin-event-listan.jpg" alt="Formuläret för ett event, fliken 1. Listan"></figure>
+<p>Några tips:</p>
+<ul>
+<li><strong>Sport</strong> bestämmer om eventet hamnar på Development Golf eller Development Tennis.</li>
+<li><strong>Slutdatum</strong> lämnar du tomt om eventet bara är en dag.</li>
+<li>Dagen efter slutdatumet flyttas eventet själv till <strong>Tidigare</strong>. Du behöver inte göra något.</li>
+<li>I <strong>Om eventet</strong> blir en tom rad ett nytt stycke.</li>
+<li>I <strong>Det här ingår</strong> skriver du en punkt per rad.</li>
+<li>Listan på sajten sorteras efter datum. Ordningen kan du inte ändra för hand.</li>
+</ul>
+
+<h2 id="falten">Var syns fälten i ett event?</h2>
+<p>Varje event visas på två ställen: som en <strong>rad</strong> i listan på Development-sidan, och i en <strong>ruta</strong> som öppnas när besökaren klickar på raden.</p>
+<p>Så här ser raderna ut. Till vänster datumet, i mitten text, till höger eventbilden:</p>
+<figure><img src="{{IMG}}02-eventlista.jpg" alt="Kommande event i listan på Development Tennis"></figure>
+<p>Ett tidigare event får texten Tidigare och en svartvit bild:</p>
+<figure><img src="{{IMG}}03-eventlista-tidigare.jpg" alt="Ett tidigare event längst ner i listan"></figure>
+<p>Så här ser rutan ut när man klickar på ett event:</p>
+<figure><img src="{{IMG}}04-ruta-topp.jpg" alt="Rutan för ITF Malmö, överst"></figure>
+<figure><img src="{{IMG}}05-ruta-bildspel.jpg" alt="Rutan för ITF Malmö, längre ner: bildspel och knappar"></figure>
+<table class="widefat striped">
+<thead><tr><th>Fält i formuläret</th><th>Syns på raden</th><th>Syns i rutan</th></tr></thead>
+<tbody>
+<tr><td>Namn (fältet högst upp)</td><td>Ja, stor rubrik</td><td>Ja, stor rubrik</td></tr>
+<tr><td>Sport</td><td>Nej, men styr vilken sida eventet hamnar på</td><td>Nej</td></tr>
+<tr><td>Typ av event</td><td>Ja, liten text ovanför namnet</td><td>Ja, liten text ovanför namnet</td></tr>
+<tr><td>Eventbild</td><td>Ja, till höger</td><td>Ja, högst upp</td></tr>
+<tr><td>Startdatum och slutdatum</td><td>Ja, stort datum till vänster</td><td>Ja, under Datum</td></tr>
+<tr><td>Plats</td><td>Ja</td><td>Ja</td></tr>
+<tr><td>Kort beskrivning</td><td>Ja</td><td>Nej</td></tr>
+<tr><td>Avgift</td><td>Nej</td><td>Ja</td></tr>
+<tr><td>Ålder</td><td>Nej</td><td>Ja</td></tr>
+<tr><td>Sista anmälan</td><td>Nej</td><td>Ja, bara för kommande event</td></tr>
+<tr><td>Om eventet</td><td>Nej</td><td>Ja</td></tr>
+<tr><td>Det här ingår</td><td>Nej</td><td>Ja, bara för kommande event</td></tr>
+<tr><td>Resultat och höjdpunkter</td><td>Nej</td><td>Ja, bara för tidigare event</td></tr>
+<tr><td>Bilder</td><td>Antal bilder</td><td>Ja, som bildspel</td></tr>
+</tbody>
+</table>
+<p>I rutan finns också knappen <strong>Anmäl intresse</strong>. Den öppnar sidan Boka möte, där eventets namn och sport redan är ifyllda i formuläret. För tidigare event står det i stället att eventet redan har varit, med en knapp till Kontakta oss.</p>
+
+<h2 id="bilder">Bilder och bildspel</h2>
+<p>Ett event kan ha en eventbild och ett bildspel. Eventbilden väljer du i fliken <strong>1. Listan</strong>. Bildspelet fyller du på i fliken <strong>4. Bilder</strong>.</p>
+<ol>
+<li>Klicka på <strong>Lägg till bilder</strong>.</li>
+<li>Välj bilder i mediabiblioteket, eller ladda upp nya. Du kan välja flera på en gång.</li>
+<li>Klicka på <strong>Lägg till i bildspelet</strong>.</li>
+<li>Dra bilderna för att ändra ordning. Klicka på krysset för att ta bort en bild.</li>
+<li>Spara eventet.</li>
+</ol>
+<figure><img src="{{IMG}}09-admin-event-bilder.jpg" alt="Fliken 4. Bilder med bilderna i bildspelet"></figure>
+<p>Bra att veta:</p>
+<ul>
+<li>Inför ett event passar bilder på banan eller arenan. Efteråt lägger du till bilder från eventet.</li>
+<li><strong>Rubrik för bilderna</strong> kan du lämna tom. Då står det "Bilder" på kommande event och "Bilder från eventet" på tidigare event. Vill du kan du skriva till exempel "Om arenan".</li>
+<li>Om du inte väljer någon eventbild används den första bilden i bildspelet.</li>
+<li>Bildtexten under en bild hämtas från fältet Bildtext i mediabiblioteket.</li>
+<li>Liggande bilder blir snyggast. Stående bilder får svarta kanter i bildspelet.</li>
+</ul>
+
+<h2 id="development">Ändra Development-sidorna</h2>
+<p>Gå till <strong>Sidor</strong> och öppna <strong>Development Golf</strong> eller <strong>Development Tennis</strong>. Under sidans namn finns ett formulär med fyra flikar. De följer sidan uppifrån och ner.</p>
+<p>Så här ser Development Tennis ut:</p>
+<figure><img src="{{IMG}}01-sida-toppen.jpg" alt="Toppen av Development Tennis med toppbild, rubrik och ingress"></figure>
+<p>Så här ser formuläret ut:</p>
+<figure><img src="{{IMG}}11-admin-sida-toppen.jpg" alt="Formuläret för Development Tennis, fliken 1. Toppen"></figure>
+<table class="widefat striped">
+<thead><tr><th>Flik</th><th>Fält</th><th>Var det syns på sidan</th></tr></thead>
+<tbody>
+<tr><td>1. Toppen</td><td>Toppbild</td><td>Stora bilden högst upp</td></tr>
+<tr><td>1. Toppen</td><td>Rubrik, fet del och kursiv del</td><td>Stora rubriken, t.ex. <strong>Development</strong> <em>Tennis</em></td></tr>
+<tr><td>1. Toppen</td><td>Ingress</td><td>Texten under rubriken</td></tr>
+<tr><td>2. Event</td><td>Sport</td><td>Vilka event som visas: golf eller tennis</td></tr>
+<tr><td>2. Event</td><td>Rubrik ovanför eventen</td><td>T.ex. <strong>Turneringar</strong> <em>&amp; läger</em></td></tr>
+<tr><td>3. Avslutning</td><td>Bakgrundsbild, rubrik, text, knapptext</td><td>Rutan längst ner med knappen Kontakta oss</td></tr>
+<tr><td>4. Kort på Juniorutveckling</td><td>Kortbild, liten rubrik, stor rubrik, text</td><td>Kortet på sidan Juniorutveckling</td></tr>
+</tbody>
+</table>
+<p>Bra att veta:</p>
+<ul>
+<li>Ett tomt fält visar en grå text. Det är den texten som syns på sidan om du inte skriver något eget.</li>
+<li>Rubriker har två delar: den första blir <strong>fet</strong>, den andra <em>kursiv</em>. Så ser alla rubriker på sajten ut.</li>
+<li>Kortbilden kan vara en annan bild än toppbilden. Lämnar du den tom används toppbilden.</li>
+<li>Klicka på <strong>Uppdatera</strong> när du är klar.</li>
+</ul>
+<h3>Korten på Juniorutveckling</h3>
+<p>På Juniorutveckling finns ett kort för varje publicerad Development-sida. Bild och text på korten ändrar du i fliken <strong>4. Kort på Juniorutveckling</strong> på respektive Development-sida. Ordningen styrs av <strong>Ordning</strong> under Sidattribut: lägst nummer kommer först.</p>
+<figure><img src="{{IMG}}10-admin-sida-avslutning.jpg" alt="Fliken 3. Avslutning och rutan Sidattribut med Ordning till höger"></figure>
+<p>Rubriken och texten ovanför korten ändrar du under <strong>Sidor</strong> → <strong>Juniorutveckling</strong>, i rutan "Golf och Tennis på Juniorutveckling".</p>
+<p>Så här ser korten ut:</p>
+<figure><img src="{{IMG}}06-kort-juniorutveckling.jpg" alt="Korten Golf och Tennis på Juniorutveckling"></figure>
+
+<h2 id="sidor">Ändra texter och bilder på de andra sidorna</h2>
+<p>Texterna och bilderna på Start, Juniorutveckling, Om oss, Våra tjänster och de andra sidorna kan du ändra själv. Utseendet ändras inte, bara orden och bilderna.</p>
+<ol>
+<li>Gå till <strong>Sidor</strong> och öppna sidan.</li>
+<li>I rutan <strong>Innehåll på sidan</strong> finns en flik för varje del av sidan, uppifrån och ner. Klicka på fliken för den del du vill ändra.</li>
+<li>Ändra texten direkt i fältet. Vill du byta en bild klickar du på <strong>Lägg till bild</strong> och väljer en bild.</li>
+<li>Klicka på <strong>Uppdatera</strong>.</li>
+</ol>
+<figure><img src="{{IMG}}12-admin-sida-innehall.jpg" alt="Rutan Innehåll på sidan på Start, fliken Våra kompetenser: rubrikens feta och kursiva del, knapptexten och bakgrunden vid Fotboll"></figure>
+<p>Bra att veta:</p>
+<ul>
+<li>Textfälten visar det som står på sidan i dag. Ändrar du inget sparas inget.</li>
+<li>När du ändrar en text märks fältet <strong>Ändrad</strong>, och fliken får en blå punkt. Vill du ångra klickar du på <strong>Återställ dagens text</strong> vid fältet. Tömmer du ett textfält kommer dagens text också tillbaka.</li>
+<li>I en längre text blir en ny rad en radbrytning, och en tom rad ett nytt stycke.</li>
+<li>Rubriker har två fält: den första delen blir <strong>fet</strong>, den andra <em>kursiv</em>.</li>
+<li>Ett tomt bildfält behåller bilden som syns i dag. Under varje bildfält ser du den bilden.</li>
+<li>En ny bakgrundsbild blir automatiskt lite mörkare, så att menyn och den vita texten syns. Ljusa foton fungerar därför också.</li>
+<li>Byter du bild på den svenska sidan får den engelska sidan samma bild. Texterna skriver du på varje språk för sig: öppna den engelska sidan och ändra där.</li>
+<li>I formuläret finns bara det som syns på sidan. Teamet på Om oss har en egen flik, se nästa avsnitt.</li>
+<li>Menyn och sidfoten ändrar du under <strong>Meny och sidfot</strong>, se längre ner. Kundomdömena ändras inte här. Be om hjälp om de behöver ändras.</li>
+</ul>
+
+<h2 id="team">Vårt team på Om oss</h2>
+<p>Teamet på Om oss är dolt på sajten tills ni har bra bilder. Du kan förbereda allt i förväg och slå på det själv när det är klart.</p>
+<ol>
+<li>Gå till <strong>Sidor</strong> och öppna <strong>Om oss</strong>.</li>
+<li>Klicka på fliken <strong>Vårt team</strong> i rutan Innehåll på sidan.</li>
+<li>För varje person: välj <strong>Foto</strong> och kontrollera <strong>Namn</strong>, <strong>Roll</strong> och <strong>Text</strong>.</li>
+<li>Klicka på <strong>Uppdatera</strong>.</li>
+<li>Klicka på länken <strong>Förhandsgranska teamet</strong> överst i fliken. Då ser du teamet på sidan. Bara du som är inloggad ser det.</li>
+<li>När allt ser bra ut: slå på <strong>Visa teamet på sajten</strong> och klicka på <strong>Uppdatera</strong>. Nu syns teamet för alla.</li>
+</ol>
+<figure><img src="{{IMG}}14-admin-vart-team.jpg" alt="Fliken Vårt team på Om oss med knappen Visa teamet på sajten och länken Förhandsgranska teamet"></figure>
+<p>Bra att veta:</p>
+<ul>
+<li><strong>Visa personen</strong> bestämmer om en person syns. Maximilian och Ludvig är avstängda från början, eftersom de var dolda på den gamla sidan.</li>
+<li>Det finns två tomma platser längst ner för nya personer. Fyll i namn och slå på <strong>Visa personen</strong>.</li>
+<li>Fotot blir bakgrund i kortet och blir mörkare nertill så att texten syns. Stående foton passar bäst.</li>
+<li>Byter du foto på den svenska sidan får About us samma foto. Texterna och på/av-knappen ställer du in på varje språk för sig.</li>
+</ul>
+
+<h2 id="meny">Ändra menyn och sidfoten</h2>
+<p>Menyn högst upp och sidfoten längst ner är samma på alla sidor. Du ändrar dem på ett ställe: <strong>Meny och sidfot</strong> i vänstermenyn i wp-admin.</p>
+<ol>
+<li>Klicka på <strong>Meny och sidfot</strong>.</li>
+<li>Välj fliken <strong>Svenska</strong> eller <strong>English</strong>. Språken ändras var för sig.</li>
+<li>Ändra text och länkar direkt i fälten.</li>
+<li>Klicka på <strong>Spara</strong>. Ändringen syns direkt på alla sidor.</li>
+</ol>
+<figure><img src="{{IMG}}13-admin-meny-och-sidfot.jpg" alt="Sidan Meny och sidfot, fliken Svenska: menyns rader med text, länk och nivå"></figure>
+<p><strong>Menyn</strong></p>
+<ul>
+<li>Varje rad är ett menyval med text och länk.</li>
+<li>Pilarna flyttar en rad upp eller ner. Krysset tar bort raden. <strong>Lägg till menyval</strong> lägger till en rad längst ner.</li>
+<li><strong>Nivå</strong> bestämmer var raden hamnar. Väljer du <strong>Undermeny</strong> hamnar raden i rullgardinen under huvudraden ovanför, som Collegerekrytering under Våra tjänster.</li>
+<li>Knappen i menyn (<strong>Ansök nu</strong>) har en egen text och länk.</li>
+</ul>
+<p><strong>Sidfoten</strong></p>
+<ul>
+<li><strong>Rutan överst</strong>: rubriken i två delar, första delen fet och andra kursiv, och knappen. Här kan du också välja sidor där rutan inte ska visas. Från början är Kontakt vald, eftersom knappen där annars leder till samma sida.</li>
+<li><strong>Kolumn 1 och 2</strong>: rubriken och länkarna under den. Länkarna ändrar du som menyn.</li>
+<li><strong>Sociala medier</strong>: skriv hela adressen till profilen, till exempel https://www.instagram.com/s1sports. Bara ifyllda tjänster visas på sajten.</li>
+<li><strong>Raden längst ner</strong>: texten med årtal och copyright.</li>
+</ul>
+<p>Länkar till egna sidor kan skrivas som hela adressen (https://s1sports.se/kontakt/) eller kort (/kontakt/).</p>
+<p>Har något blivit fel kan du klicka på <strong>Återställ till ursprunget</strong> längst ner. Då visas menyn och sidfoten som de var från början, för det språk du står på.</p>
+
+<h2 id="engelska">Engelska versioner</h2>
+<p>Den engelska sajten s1sports.co visar bara engelska sidor och engelska event. Allt nytt behöver därför en engelsk version.</p>
+<p>De två Development-sidorna och eventen har engelska versioner. Ett engelskt event syns när det är publicerat och den engelska Development-sidan också är publicerad.</p>
+<p><strong>Ändra en engelsk version</strong></p>
+<ol>
+<li>Öppna den svenska sidan eller det svenska eventet.</li>
+<li>Klicka på pennan vid <strong>Engelska</strong> i rutan <strong>Språk</strong> till höger.</li>
+<li>Om en varning om översättningsverktyget visas: klicka på <strong>Redigera ändå</strong>. Det är okej, vi skriver översättningarna själva.</li>
+<li>Skriv den engelska texten och spara.</li>
+</ol>
+<p><strong>Skapa en engelsk version av ett nytt event</strong></p>
+<ol>
+<li>Öppna det svenska eventet.</li>
+<li>Klicka på plustecknet vid <strong>Engelska</strong> i rutan <strong>Språk</strong>.</li>
+<li>Skriv den engelska texten i varje fält och spara.</li>
+</ol>
+<p>Sport, datum och bilder kopieras automatiskt från den svenska versionen. Bara texterna behöver skrivas på engelska.</p>
+
+<h2 id="svar">Snabba svar</h2>
+<p><strong>Eventet syns inte på sajten.</strong> Kontrollera tre saker: att eventet är publicerat, att rätt sport är vald och att Development-sidan är publicerad.</p>
+<p><strong>Eventet ligger under Tidigare.</strong> Det flyttas dit självt dagen efter slutdatumet. Kontrollera datumen om det hamnat fel.</p>
+<p><strong>Hur tar jag bort ett event?</strong> Klicka på <strong>Ta bort</strong> i listan Event. Det hamnar i papperskorgen och kan tas tillbaka därifrån.</p>
+<p><strong>Kortet på Juniorutveckling har fel bild.</strong> Byt <strong>Kortbild</strong> i fliken 4 på Development-sidan.</p>
+<p><strong>Jag vill dölja en hel sida en stund.</strong> Gör om sidan till utkast. Kortet på Juniorutveckling försvinner samtidigt.</p>
+<p><strong>Menyn eller en text ser konstig ut efter en ändring.</strong> Klicka på <strong>Återställ dagens text</strong> vid fältet, eller <strong>Återställ till ursprunget</strong> under Meny och sidfot.</p>
