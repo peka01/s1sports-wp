@@ -84,6 +84,106 @@ function s1_snapshot_body(array $entry): array {
     return $cache[$file] = ['body' => $body, 'pid' => $pid];
 }
 
+/** Screen widths the theme checks visibility at: desktop, small desktop, tablet, large phone, phone. */
+const S1_WIDTHS = [1280, 1100, 900, 600, 375];
+
+/** display:none rules on single Breakdance classes, with the width range each applies to. */
+function s1_snapshot_hide_rules(array $entry): array {
+    static $cache = [];
+    $key = implode('|', (array) $entry['css']);
+    if (isset($cache[$key])) return $cache[$key];
+    $css = '';
+    foreach ((array) $entry['css'] as $path) {
+        $file = get_template_directory() . '/' . $path;
+        if (is_readable($file)) $css .= (string) file_get_contents($file) . "\n";
+    }
+    $rules = [];
+    $collect = static function (string $chunk, int $min, int $max) use (&$rules): void {
+        if (!preg_match_all('/([^{}]+)\{([^{}]*)\}/', $chunk, $found, PREG_SET_ORDER)) return;
+        foreach ($found as $rule) {
+            if (!preg_match('/(?:^|;)\s*display\s*:\s*none\s*(?:!important)?\s*(?:;|$)/', $rule[2])) continue;
+            foreach (explode(',', $rule[1]) as $selector) {
+                if (preg_match('/^\s*\.(bde-[a-z0-9-]+-\d+-\d+)\s*$/', $selector, $c)) $rules[$c[1]][] = [$min, $max];
+            }
+        }
+    };
+    $length = strlen($css);
+    $pos = 0;
+    $top = '';
+    while (($at = strpos($css, '@media', $pos)) !== false) {
+        $top .= substr($css, $pos, $at - $pos);
+        $open = strpos($css, '{', $at);
+        if ($open === false) break;
+        $condition = substr($css, $at + 6, $open - $at - 6);
+        $depth = 1;
+        $i = $open + 1;
+        while ($i < $length && $depth > 0) {
+            if ($css[$i] === '{') $depth++;
+            elseif ($css[$i] === '}') $depth--;
+            $i++;
+        }
+        if (stripos($condition, 'print') === false) {
+            $min = preg_match('/min-width:\s*(\d+)/', $condition, $a) ? (int) $a[1] : 0;
+            $max = preg_match('/max-width:\s*(\d+)/', $condition, $b) ? (int) $b[1] : PHP_INT_MAX;
+            $collect(substr($css, $open + 1, $i - $open - 2), $min, $max);
+        }
+        $pos = $i;
+    }
+    $collect($top . substr($css, $pos), 0, PHP_INT_MAX);
+    return $cache[$key] = $rules;
+}
+
+/**
+ * For every Breakdance element in the page body: at which of S1_WIDTHS it is hidden, by its own
+ * rules or a parent's (Breakdance's "hide on breakpoint" settings).
+ */
+function s1_snapshot_hidden(array $entry): array {
+    static $cache = [];
+    $file = (string) $entry['file'];
+    if (isset($cache[$file])) return $cache[$file];
+    $rules = s1_snapshot_hide_rules($entry);
+    $body = s1_snapshot_body($entry)['body'];
+    $none = array_fill(0, count(S1_WIDTHS), false);
+    $void = ['img', 'br', 'input', 'meta', 'link', 'source', 'hr', 'area', 'base', 'col', 'embed', 'param', 'track', 'wbr'];
+    $stack = [];
+    $hidden = [];
+    preg_match_all('~<(/?)([a-zA-Z][a-zA-Z0-9-]*)\b([^>]*?)(/?)>~', $body, $tags, PREG_SET_ORDER);
+    foreach ($tags as $tag) {
+        $name = strtolower($tag[2]);
+        if ($tag[1] === '/') {
+            for ($i = count($stack) - 1; $i >= 0; $i--) {
+                if ($stack[$i][0] === $name) { array_splice($stack, $i); break; }
+            }
+            continue;
+        }
+        $mask = $stack ? $stack[count($stack) - 1][1] : $none;
+        if (preg_match('/\sclass="([^"]*)"/', ' ' . $tag[3], $c)) {
+            $own = [];
+            foreach (preg_split('/\s+/', trim($c[1])) as $class) {
+                if (!preg_match('/^bde-[a-z0-9-]+-\d+-\d+$/', $class)) continue;
+                $own[] = $class;
+                foreach ($rules[$class] ?? [] as [$min, $max]) {
+                    foreach (S1_WIDTHS as $i => $width) if ($width >= $min && $width <= $max) $mask[$i] = true;
+                }
+            }
+            foreach ($own as $class) $hidden[$class] ??= $mask;
+        }
+        if ($tag[4] !== '/' && !in_array($name, $void, true)) $stack[] = [$name, $mask];
+    }
+    return $cache[$file] = $hidden;
+}
+
+/** 'all' when an element never shows, 'mobil'/'dator' when it only shows on phones or desktops, '' when it always shows. */
+function s1_snapshot_visibility(array $entry, string $class): string {
+    $mask = s1_snapshot_hidden($entry)[$class] ?? null;
+    if (!$mask || !in_array(true, $mask, true)) return '';
+    if (!in_array(false, $mask, true)) return 'all';
+    $last = count($mask) - 1;
+    if ($mask[0] && !$mask[$last]) return 'mobil';
+    if ($mask[$last] && !$mask[0]) return 'dator';
+    return '';
+}
+
 /** Plain text from a piece of snapshot HTML: <br> becomes a line break, a new <p> an empty line. */
 function s1_snapshot_plain(string $html): string {
     $html = (string) preg_replace('~<br\s*/?>~i', "\x01", $html);
@@ -132,6 +232,11 @@ function s1_snapshot_images(array $entry): array {
         if (preg_match('~\.' . preg_quote($class, '~') . '\{[^}]*background-image:url\(([^)]+)\)~', $css, $bg)) {
             $spots[$class] = ['pos' => $m[0][1], 'type' => 'bg', 'class' => $class, 'url' => trim($bg[1], '\'"')];
         }
+    }
+    foreach ($spots as $class => $spot) {
+        $visibility = s1_snapshot_visibility($entry, $class);
+        if ($visibility === 'all') unset($spots[$class]);
+        else $spots[$class]['only'] = $visibility;
     }
     $spots = array_values($spots);
     usort($spots, static fn(array $a, array $b): int => $a['pos'] <=> $b['pos']);
@@ -203,17 +308,26 @@ function s1_snapshot_texts(array $entry): array {
         $number = $m[4][0];
         if (isset($items[$class])) continue;
         $after = $m[0][1] + strlen($m[0][0]);
-        $item = ['pos' => $m[0][1], 'kind' => $kind, 'class' => $class, 'tag' => $tag, 'key' => 's1_txt_' . $number];
+        $visibility = s1_snapshot_visibility($entry, $class);
+        if ($visibility === 'all') continue; // hidden on every screen size: nothing to edit
+        $item = ['pos' => $m[0][1], 'kind' => $kind, 'class' => $class, 'tag' => $tag, 'key' => 's1_txt_' . $number, 'only' => $visibility];
         if ($kind === 'dual-heading') {
             $close = strpos($body, '</' . $tag . '>', $after);
             if ($close === false) continue;
             $inner = substr($body, $after, $close - $after);
-            // Parts in screen order (the theme makes the first one bold and the second italic);
-            // the key suffix follows Breakdance's span: _b for "primary", _i for "secondary".
+            // The theme shows the first span bold and every span after it italic, so the heading has two
+            // fields: the first span, and the rest joined (the Start heading has three spans:
+            // "Utvecklar" + "nästa" + "generations idrottare"). The key suffix follows the first span's
+            // Breakdance style (_b for "primary", _i for "secondary"); the rest gets the other one.
             if (!preg_match_all('/dual-heading--(primary|secondary)[^>]*>([\s\S]*?)<\/span>/', $inner, $spans, PREG_SET_ORDER)) continue;
+            $first = $spans[0][1] === 'primary' ? 'b' : 'i';
             $item['kind'] = 'dual';
-            $item['parts'] = [];
-            foreach ($spans as $span) $item['parts'][$span[1] === 'primary' ? 'b' : 'i'] = s1_snapshot_plain($span[2]);
+            $item['spans'] = count($spans);
+            $item['parts'] = [$first => s1_snapshot_plain($spans[0][2])];
+            if (count($spans) > 1) {
+                $rest = array_map(static fn(array $span): string => s1_snapshot_plain($span[2]), array_slice($spans, 1));
+                $item['parts'][$first === 'b' ? 'i' : 'b'] = trim(implode(' ', array_filter($rest, 'strlen')));
+            }
             $items[$class] = $item;
             continue;
         }
@@ -319,11 +433,23 @@ function s1_apply_page_texts(string $html, int $post_id, array $entry): string {
     foreach (s1_snapshot_texts($entry) as $item) {
         $class = preg_quote($item['class'], '/');
         if ($item['kind'] === 'dual') {
-            foreach (['b' => 'primary', 'i' => 'secondary'] as $part => $style) {
-                if (!isset($values[$item['key'] . '_' . $part], $item['parts'][$part])) continue;
-                $new = s1_page_text_html($values[$item['key'] . '_' . $part], 'dual');
-                $html = (string) preg_replace_callback('/(<h\d class="' . $class . '[ "][\s\S]*?dual-heading--' . $style . '[^>]*>)[\s\S]*?(<\/span>)/', static fn(array $m): string => $m[1] . $new . $m[2], $html);
+            // Field 1 goes into the first span, field 2 into the second; further spans are emptied when field 2 is changed.
+            $suffixes = array_keys($item['parts']);
+            $new = [];
+            foreach ($suffixes as $n => $suffix) {
+                if (isset($values[$item['key'] . '_' . $suffix])) $new[$n] = s1_page_text_html($values[$item['key'] . '_' . $suffix], 'dual');
             }
+            if (!$new) continue;
+            $html = (string) preg_replace_callback('/(<(h\d) class="' . $class . '[ "][^>]*>)([\s\S]*?)(<\/\2>)/', static function (array $h) use ($new): string {
+                $index = 0;
+                $inner = (string) preg_replace_callback('/(<span[^>]*dual-heading--[^>]*>)[\s\S]*?(<\/span>)/', static function (array $s) use ($new, &$index): string {
+                    $n = $index++;
+                    if ($n === 0) return isset($new[0]) ? $s[1] . $new[0] . $s[2] : $s[0];
+                    if (!isset($new[1])) return $s[0];
+                    return $s[1] . ($n === 1 ? $new[1] : '') . $s[2];
+                }, $h[3]);
+                return $h[1] . $inner . $h[4];
+            }, $html);
             continue;
         }
         if (!isset($values[$item['key']])) continue;
@@ -398,6 +524,10 @@ function s1_page_content_admin_post_id(): int {
     return 0;
 }
 
+function s1_page_field_label(string $label, string $only): string {
+    return $only === 'mobil' ? $label . ' (syns bara på mobilen)' : ($only === 'dator' ? $label . ' (syns bara på datorn)' : $label);
+}
+
 /** The fields for one snapshot page: a tab per part of the page, its texts and images in page order. */
 function s1_page_content_fields(array $entry): array {
     $prefix = 'field_s1pc_' . substr(md5($entry['locale'] . '-' . $entry['slug']), 0, 8) . '_';
@@ -413,7 +543,7 @@ function s1_page_content_fields(array $entry): array {
         foreach ($part['items'] as $item) {
             if ($item['field'] === 'image') {
                 $fields[] = [
-                    'key' => $prefix . $item['key'], 'name' => $item['key'], 'label' => $item['label'], 'type' => 'image',
+                    'key' => $prefix . $item['key'], 'name' => $item['key'], 'label' => s1_page_field_label($item['label'], $item['only'] ?? ''), 'type' => 'image',
                     'instructions' => 'I dag: <a href="' . esc_url($item['url']) . '" target="_blank" rel="noopener">'
                         . '<img src="' . esc_url($item['url']) . '" alt="" style="display:block;max-width:220px;max-height:120px;margin:6px 0;border-radius:6px;background:#222"></a>'
                         . 'Lämna tomt för att behålla den här bilden.',
@@ -426,9 +556,9 @@ function s1_page_content_fields(array $entry): array {
                 foreach ($item['parts'] as $part_key => $text) {
                     $fields[] = [
                         'key' => $prefix . $item['key'] . '_' . $part_key, 'name' => $item['key'] . '_' . $part_key,
-                        'label' => count($item['parts']) > 1 ? ($position++ === 0 ? 'Rubrik, fet del' : 'Rubrik, kursiv del') : 'Rubrik',
+                        'label' => s1_page_field_label(count($item['parts']) > 1 ? ($position++ === 0 ? 'Rubrik, fet del' : 'Rubrik, kursiv del') : 'Rubrik', $item['only'] ?? ''),
                         'type' => 'text', 'default_value' => $text, 's1_original' => $text,
-                        'wrapper' => ['width' => count($item['parts']) > 1 ? '50' : ''], 'wpml_cf_preferences' => 2,
+                        'wrapper' => ['width' => count($item['parts']) > 1 ? '50' : '', 'data-s1-original' => $text], 'wpml_cf_preferences' => 2,
                     ];
                 }
                 continue;
@@ -436,7 +566,8 @@ function s1_page_content_fields(array $entry): array {
             $labels = ['text' => 'Text', 'rich-text' => 'Text', 'heading' => 'Rubrik', 'badge' => 'Liten etikett', 'button' => 'Knapptext'];
             $long = in_array($item['kind'], ['text', 'rich-text'], true);
             $fields[] = [
-                'key' => $prefix . $item['key'], 'name' => $item['key'], 'label' => $labels[$item['kind']] ?? 'Text',
+                'key' => $prefix . $item['key'], 'name' => $item['key'], 'label' => s1_page_field_label($labels[$item['kind']] ?? 'Text', $item['only'] ?? ''),
+                'wrapper' => ['data-s1-original' => $item['text']],
                 'type' => $long ? 'textarea' : 'text',
                 'rows' => $long ? max(2, min(10, (int) ceil(mb_strlen($item['text']) / 85) + substr_count($item['text'], "\n"))) : null,
                 'new_lines' => '',
@@ -484,3 +615,51 @@ add_filter('acf/update_value', function ($value, $post_id, $field) {
     if (!is_array($field) || !isset($field['s1_original']) || !is_string($value)) return $value;
     return s1_page_text_normal($value) === s1_page_text_normal((string) $field['s1_original']) ? '' : $value;
 }, 10, 3);
+
+/* In the form: mark changed texts with "Ändrad" and a link back to today's text, and mark tabs that hold changes. */
+add_action('acf/input/admin_footer', function (): void {
+    $post_id = s1_page_content_admin_post_id();
+    if (!$post_id || !s1_is_snapshot_page($post_id)) return;
+    ?>
+    <style>
+    #acf-group_s1_page_hero .s1-pill{display:none;margin-left:8px;padding:1px 8px;border-radius:10px;background:#dbe9f6;color:#135e96;font-size:11px;font-weight:600;vertical-align:1px}
+    #acf-group_s1_page_hero .s1-restore{display:none;margin-left:8px;font-size:12px}
+    #acf-group_s1_page_hero .s1-changed .s1-pill{display:inline-block}
+    #acf-group_s1_page_hero .s1-changed .s1-restore{display:inline}
+    #acf-group_s1_page_hero .s1-changed input[type=text],#acf-group_s1_page_hero .s1-changed textarea{border-color:#72aee6;box-shadow:0 0 0 1px #72aee6}
+    #acf-group_s1_page_hero .acf-tab-button.s1-tab-changed::after{content:"";display:inline-block;width:7px;height:7px;margin-left:6px;border-radius:50%;background:#2271b1;vertical-align:1px}
+    </style>
+    <script>
+    (function () {
+        const box = document.getElementById('acf-group_s1_page_hero');
+        if (!box) return;
+        const norm = s => (s || '').replace(/\r\n?/g, '\n').replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').trim();
+        const input = field => field.querySelector('input[type=text], textarea');
+        const changed = field => {
+            if (field.dataset.s1Original !== undefined) { const v = norm(input(field)?.value); return v !== '' && v !== norm(field.dataset.s1Original); }
+            return !!field.querySelector('.acf-image-uploader.has-value');
+        };
+        const markTabs = () => {
+            let tabKey = null; const changedTabs = new Set();
+            box.querySelectorAll('.acf-fields > .acf-field').forEach(field => {
+                if (field.classList.contains('acf-field-tab')) { tabKey = field.dataset.key; return; }
+                if (tabKey && changed(field)) changedTabs.add(tabKey);
+            });
+            box.querySelectorAll('.acf-tab-button').forEach(button => button.classList.toggle('s1-tab-changed', changedTabs.has(button.dataset.key)));
+        };
+        const update = field => { if (field.dataset.s1Original !== undefined) field.classList.toggle('s1-changed', changed(field)); markTabs(); };
+        box.querySelectorAll('.acf-field[data-s1-original]').forEach(field => {
+            const label = field.querySelector('.acf-label label');
+            if (!label || !input(field)) return;
+            label.insertAdjacentHTML('beforeend', '<span class="s1-pill">Ändrad</span><button type="button" class="button-link s1-restore">Återställ dagens text</button>');
+            field.querySelector('.s1-restore').addEventListener('click', () => { input(field).value = field.dataset.s1Original; update(field); });
+            input(field).addEventListener('input', () => update(field));
+            update(field);
+        });
+        if (window.acf) acf.addAction('change', markTabs);
+        box.addEventListener('click', () => setTimeout(markTabs, 50));
+        markTabs();
+    })();
+    </script>
+    <?php
+});
