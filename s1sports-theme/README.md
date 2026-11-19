@@ -20,11 +20,15 @@ Installera och aktivera även insticksprogrammet `s1sports-content` och ACF. Den
 
 `s1sports-content/wpml-config.xml` anger att `atleter` ska översättas, att idrott och college/status ska översättas och att startsidesmarkering och ordning ska kopieras mellan språken. Koppla befintliga svenska och engelska profiler som översättningar i WPML. WPML har inte kunnat testas i den lokala installationen eftersom licensierad WPML-kod inte finns där.
 
-## Bilder på de övriga sidorna
+## Texter och bilder på de övriga sidorna
 
-Sidorna som bygger på ögonblicksbilder (Start, Juniorutveckling, Om oss, Våra tjänster, Collegerekrytering, Professionell rådgivning m.fl., på båda språken) har rutan **Bilder på sidan** i wp-admin. Där finns ett fält för varje bild och bakgrundsbild på sidan, i sidans ordning: **Toppbild** överst och sedan t.ex. "Bild vid "Utveckling för juniorer"" eller "Bakgrund vid "Fotboll"". Fälten hittas automatiskt i ögonblicksbilden och sidans CSS, och varje fält visar bilden som syns i dag. Tomt fält behåller den bilden.
+Sidorna som bygger på ögonblicksbilder (Start, Juniorutveckling, Om oss, Våra tjänster, Collegerekrytering, Professionell rådgivning, Kontakt, Boka möte, Våra idrottare, på båda språken) har rutan **Innehåll på sidan** i wp-admin. Den har en flik per del av sidan, i sidans ordning, och i varje flik sidans texter och bilder: rubriker (fet och kursiv del), texter, knapptexter, små etiketter, bilder och bakgrundsbilder. Fälten hittas automatiskt i ögonblicksbilden och sidans CSS. Utseendet ändras aldrig, bara orden och bilderna.
 
-En vald bild sparas som `s1_hero_image` (toppbilden) eller `s1_img_<elementnummer>`. Breakdance ger samma element samma nummer på svenska och engelska sidan, så WPML kopierar valet till den engelska sidan. Den engelska startsidan har två kort (Swimming, Amerikansk fotboll) som inte finns på svenska; de bilderna väljs på den engelska sidan. Bilder i sidfoten och i sektionen som ersätts av Golf/Tennis-korten ingår inte. Sidorna öppnas i den klassiska redigeraren eftersom deras texter ligger i temat. Kod: `inc/page-images.php`.
+- **Texter:** fältet visar texten som står på sidan i dag. Bara ändrade texter sparas (`s1_txt_<elementnummer>`, rubrikens delar `_b`/`_i`); en text som är som i dag sparas tom, och ett tömt fält visar dagens text igen. Ny rad blir radbrytning, tom rad nytt stycke. Texterna skrivs separat på svenska och engelska.
+- **Bilder:** fältet visar bilden som syns i dag; tomt fält behåller den. En vald bild sparas som `s1_hero_image` (toppbilden) eller `s1_img_<elementnummer>`. Breakdance ger samma element samma nummer på båda språken, så WPML kopierar bildvalet till den engelska sidan. Den engelska startsidan har två kort (Swimming, Amerikansk fotboll) som inte finns på svenska; de bilderna väljs på den engelska sidan.
+- **Ingår inte:** sidhuvud, meny och sidfot, block som delas mellan flera sidor (omdömen, idrottarslidern, faktablocket), idrottarkorten och sektionen på Juniorutveckling som ersätts av Golf/Tennis-korten. Formulärens fält ingår inte heller.
+
+Fälten registreras bara för sidan som redigeras. Sidorna öppnas i den klassiska redigeraren. Kod: `inc/page-content.php`.
 
 ## Filtret på Våra idrottare
 

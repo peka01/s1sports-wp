@@ -56,6 +56,7 @@ function s1_render_snapshot_if_available(): bool {
     if (!$details) return false;
     $html = (string) file_get_contents($details['file']);
     $html = str_replace('{{THEME}}', get_template_directory_uri(), $html);
+    $html = s1_apply_page_texts($html, (int) get_queried_object_id(), $details);
     $html = s1_render_dynamic_athletes($html);
     $with_development = in_array($details['slug'], ['junior-utveckling', 'junior-development'], true);
     if ($with_development) $html = s1_render_development_cards($html);
