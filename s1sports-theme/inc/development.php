@@ -444,7 +444,6 @@ function s1_development_event_dialog(array $event, int $fallback_image, string $
     $body = '<span class="s1d-eyebrow">' . esc_html($event['series']) . '</span>'
         . '<h2 class="s1d-modal__title" id="' . esc_attr($id) . '-title">' . esc_html($event['title']) . '</h2>'
         . ($dl !== '' ? '<dl class="s1d-facts">' . $dl . '</dl>' : '');
-    if ($event['past']) $body .= $gallery;
     if ($event['about'] !== '') {
         $body .= '<div class="s1d-modal__section"><h3>' . esc_html(s1_text('Om eventet', 'About the event')) . '</h3>' . s1d_paragraphs($event['about']) . '</div>';
     }
@@ -452,6 +451,7 @@ function s1_development_event_dialog(array $event, int $fallback_image, string $
         if ($event['result'] !== '') {
             $body .= '<div class="s1d-modal__section"><h3>' . esc_html(s1_text('Resultat och höjdpunkter', 'Results and highlights')) . '</h3>' . s1d_paragraphs($event['result']) . '</div>';
         }
+        $body .= $gallery;
         $body .= '<div class="s1d-modal__note"><p>' . esc_html(s1_text('Det här eventet har redan varit. Vill du vara med nästa gång?', 'This event has already taken place. Want to join next time?')) . '</p>'
             . '<a class="s1d-btn s1d-btn--light" href="' . esc_url(s1_booking_url(['s1_sport' => $sport_name])) . '">' . esc_html(s1_text('Kontakta oss', 'Contact us')) . '</a></div>';
     } else {
