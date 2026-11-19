@@ -1,6 +1,20 @@
 <wpml-config>
   <custom-fields>
     <custom-field action="copy">s1_hero_image</custom-field>
+    <custom-field action="copy">s1_img_107</custom-field>
+    <custom-field action="copy">s1_img_113</custom-field>
+    <custom-field action="copy">s1_img_116</custom-field>
+    <custom-field action="copy">s1_img_119</custom-field>
+    <custom-field action="copy">s1_img_121</custom-field>
+    <custom-field action="copy">s1_img_135</custom-field>
+    <custom-field action="copy">s1_img_138</custom-field>
+    <custom-field action="copy">s1_img_140</custom-field>
+    <custom-field action="copy">s1_img_141</custom-field>
+    <custom-field action="copy">s1_img_144</custom-field>
+    <custom-field action="copy">s1_img_147</custom-field>
+    <custom-field action="copy">s1_img_151</custom-field>
+    <custom-field action="copy">s1_img_158</custom-field>
+    <custom-field action="copy">s1_img_161</custom-field>
     <custom-field action="copy">s1_dev_sport</custom-field>
     <custom-field action="copy">s1_dev_hero_image</custom-field>
     <custom-field action="translate">s1_dev_intro</custom-field>

@@ -2,13 +2,13 @@
 /**
  * Plugin Name: S1 Sports Content
  * Description: Athletes, events and the meeting form for the S1 Sports theme.
- * Version: 0.9.0
+ * Version: 0.9.1
  * Requires PHP: 8.0
  * Text Domain: s1sports-content
  */
 defined('ABSPATH') || exit;
 
-const S1_CONTENT_VERSION = '0.9.0';
+const S1_CONTENT_VERSION = '0.9.1';
 
 require_once __DIR__ . '/inc/contact.php';
 require_once __DIR__ . '/inc/events.php';

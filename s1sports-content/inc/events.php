@@ -102,15 +102,15 @@ add_action('acf/init', function (): void {
             ['key' => 'field_s1_event_includes', 'label' => 'Det här ingår', 'name' => 's1_event_includes', 'rows' => 4,
                 'instructions' => 'En punkt per rad. Visas bara för kommande event, ovanför knappen Anmäl intresse.'] + $text,
 
-            ['key' => 'field_s1_event_tab_photos', 'label' => '3. Bilder', 'type' => 'tab'],
+            ['key' => 'field_s1_event_tab_after', 'label' => '3. Efter eventet', 'type' => 'tab'],
+            ['key' => 'field_s1_event_result', 'label' => 'Resultat och höjdpunkter', 'name' => 's1_event_result', 'rows' => 5,
+                'instructions' => 'Visas i rutan när eventet har varit. Lägg gärna till bilder från eventet under fliken Bilder.'] + $text,
+
+            ['key' => 'field_s1_event_tab_photos', 'label' => '4. Bilder', 'type' => 'tab'],
             ['key' => 'field_s1_event_gallery_title', 'label' => 'Rubrik för bilderna', 'name' => 's1_event_gallery_title', 'type' => 'text',
                 'instructions' => 'Lämna tomt för "Bilder från eventet" (tidigare event) eller "Bilder" (kommande).', 'placeholder' => 'Om arenan'],
             ['key' => 'field_s1_event_gallery', 'label' => 'Bildspel', 'name' => 's1_event_gallery', 'type' => 's1_gallery',
                 'instructions' => 'Visas som bildspel i rutan. Lägg till bilder på banan eller arenan inför eventet, och bilder från eventet efteråt. Dra för att ändra ordning. Bildtexten hämtas från mediabiblioteket.'],
-
-            ['key' => 'field_s1_event_tab_after', 'label' => '4. Efter eventet', 'type' => 'tab'],
-            ['key' => 'field_s1_event_result', 'label' => 'Resultat och höjdpunkter', 'name' => 's1_event_result', 'rows' => 5,
-                'instructions' => 'Visas i rutan när eventet har varit. Lägg gärna till bilder från eventet under fliken Bilder.'] + $text,
         ], ['s1_event_sport', 's1_event_start', 's1_event_end', 's1_event_image', 's1_event_gallery']),
         'location' => [[['param' => 'post_type', 'operator' => '==', 'value' => 's1_event']]],
         'position' => 'acf_after_title',

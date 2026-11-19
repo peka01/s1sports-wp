@@ -3,7 +3,7 @@ defined('ABSPATH') || exit;
 require_once get_template_directory() . '/inc/snapshot.php';
 require_once get_template_directory() . '/inc/athletes.php';
 require_once get_template_directory() . '/inc/development.php';
-require_once get_template_directory() . '/inc/page-hero.php';
+require_once get_template_directory() . '/inc/page-images.php';
 add_action('after_setup_theme', function () {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');

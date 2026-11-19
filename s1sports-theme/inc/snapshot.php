@@ -60,10 +60,7 @@ function s1_render_snapshot_if_available(): bool {
     $with_development = in_array($details['slug'], ['junior-utveckling', 'junior-development'], true);
     if ($with_development) $html = s1_render_development_cards($html);
     $html = s1_prepare_snapshot_html($html, $details['locale']);
-    $hero_style = s1_page_hero_style((int) get_queried_object_id(), $details);
-    if ($hero_style !== '' && ($header_end = strpos($html, '</header>')) !== false) {
-        $html = substr_replace($html, $hero_style, $header_end + strlen('</header>'), 0);
-    }
+    $html = s1_apply_page_images($html, (int) get_queried_object_id(), $details);
     s1_output_snapshot_document($html, $details['css'], $details['locale'], $with_development);
     return true;
 }
