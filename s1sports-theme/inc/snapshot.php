@@ -68,10 +68,7 @@ function s1_render_snapshot_if_available(): bool {
 
 /** Post-processing shared by every page built from a snapshot. */
 function s1_prepare_snapshot_html(string $html, string $locale): string {
-    $html = s1_services_dropdown($html, $locale);
-    $social_div = $locale === 'en' ? '143' : '138';
-    $social_divider = $locale === 'en' ? '159' : '127';
-    $html = preg_replace('~<div class="bde-div-108-' . $social_div . ' bde-div">[\s\S]*?(?=<div class="bde-fancy-divider-108-' . $social_divider . ' bde-fancy-divider">)~', '', $html, 1);
+    $html = s1_render_site_parts($html, $locale);
     $html = preg_replace('/<div role="navigation" aria-label="(?:Språkväljare|Language Switcher|Language switcher)" class="wpml-ls-statics-shortcode_actions[\s\S]*?<\/div>/i', '<!--S1_LANGUAGE_SWITCHER-->', $html, 1);
     $html = str_replace('<!--S1_LANGUAGE_SWITCHER-->', s1_mirror_switcher_html(), $html);
     $html = preg_replace('/<script\b[^>]*>[\s\S]*?<\/script>/i', '', $html);
@@ -92,44 +89,6 @@ function s1_prepare_snapshot_html(string $html, string $locale): string {
         $html = s1_prefill_booking_form($html);
     }
     return $html;
-}
-
-/**
- * Turn the "Våra tjänster" / "Our services" item in the header into a dropdown with
- * the three service pages. Opens on hover or focus on desktop and works as an
- * accordion in the mobile menu (assets/mirror.css, assets/mirror.js).
- */
-function s1_services_dropdown(string $html, string $locale): string {
-    if ($locale === 'en') {
-        $parent = 'https://s1sports.co/our-services/';
-        $items = [
-            'college-recruiting' => 'College recruiting',
-            'pro-consulting' => 'Professional guidance',
-            'junior-development' => 'Junior development',
-        ];
-        $base = 'https://s1sports.co/';
-    } else {
-        $parent = 'https://s1sports.se/vara-tjanster/';
-        $items = [
-            'college-rekrytering' => 'Collegerekrytering',
-            'professionell-radgivning' => 'Professionell rådgivning',
-            'junior-utveckling' => 'Juniorutveckling',
-        ];
-        $base = 'https://s1sports.se/';
-    }
-    $current = (string) get_post_field('post_name', get_queried_object_id());
-    $links = '';
-    foreach ($items as $slug => $label) {
-        $links .= '<li><a class="s1-submenu__link" href="' . esc_url($base . $slug . '/') . '"' . ($slug === $current ? ' aria-current="page"' : '') . '>' . esc_html($label) . '</a></li>';
-    }
-    $toggle_label = $locale === 'en' ? 'Show the service pages' : 'Visa tjänstesidorna';
-    $chevron = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>';
-    $pattern = '~<li class="([^"]*\bbreakdance-menu-item\b[^"]*)">(\s*<a class="breakdance-link breakdance-menu-link" href="' . preg_quote($parent, '~') . '"[^>]*>[\s\S]*?</a>)(\s*</li>)~';
-    return (string) preg_replace_callback($pattern, static function (array $m) use ($links, $toggle_label, $chevron): string {
-        return '<li class="' . $m[1] . ' s1-has-sub">' . $m[2]
-            . '<button type="button" class="s1-sub-toggle" aria-expanded="false" aria-controls="s1-services-sub" aria-label="' . esc_attr($toggle_label) . '">' . $chevron . '</button>'
-            . '<ul class="s1-submenu" id="s1-services-sub">' . $links . '</ul>' . $m[3];
-    }, $html, 1);
 }
 
 /**

@@ -16,7 +16,7 @@
 @media(max-width:479px){.icon-filter-container{gap:12px;flex-wrap:wrap;justify-content:center}}
 @media(max-width:479px){.bde-container-link-498-124,.bde-container-link-498-126,.bde-container-link-501-124,.bde-container-link-501-126{min-height:474px!important}}
 
-/* "Våra tjänster" dropdown in the header (markup added by s1_services_dropdown() in inc/snapshot.php) */
+/* Submenus in the header, e.g. under "Våra tjänster" (markup from s1_render_site_menu() in inc/site-parts.php) */
 .s1-has-sub{position:relative;display:flex;align-items:center;flex-wrap:wrap}
 .s1-sub-toggle{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-left:2px;padding:0;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer}
 .s1-sub-toggle svg{transition:transform .2s ease}

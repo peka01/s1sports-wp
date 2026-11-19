@@ -8,7 +8,7 @@ Vid flytt till en annan WordPress-installation behöver Media-adresserna i sidko
 
 Språkväxlaren använder WPML:s `wpml_active_languages` för att länka till sidans översättning på `s1sports.se` eller `s1sports.co`. Menyns flaggor, pil och storlek följer originalets WPML-markering och CSS. Swiper-biblioteket används för karuseller.
 
-Startsidan, Om oss och college-sidorna har sliderinställningar per sidtyp och skärmstorlek. Pilarna är kopplade till rätt slider även när originalsidans interna ID skiljer sig från behållarens. Sociala länkar i sidfoten är dolda enligt önskemål tills riktiga profiladresser finns.
+Startsidan, Om oss och college-sidorna har sliderinställningar per sidtyp och skärmstorlek. Pilarna är kopplade till rätt slider även när originalsidans interna ID skiljer sig från behållarens. Sociala länkar i sidfoten visas bara när en adress är ifylld under **Meny och sidfot** i wp-admin.
 
 ## Mötesformulär
 
@@ -25,10 +25,19 @@ Installera och aktivera även insticksprogrammet `s1sports-content` och ACF. Den
 Sidorna som bygger på ögonblicksbilder (Start, Juniorutveckling, Om oss, Våra tjänster, Collegerekrytering, Professionell rådgivning, Kontakt, Boka möte, Våra idrottare, på båda språken) har rutan **Innehåll på sidan** i wp-admin. Den har en flik per del av sidan, i sidans ordning, och i varje flik sidans texter och bilder: rubriker (fet och kursiv del), texter, knapptexter, små etiketter, bilder och bakgrundsbilder. Fälten hittas automatiskt i ögonblicksbilden och sidans CSS. Utseendet ändras aldrig, bara orden och bilderna.
 
 - **Texter:** fältet visar texten som står på sidan i dag. Bara ändrade texter sparas (`s1_txt_<elementnummer>`, rubrikens delar `_b`/`_i`); en text som är som i dag sparas tom, och ett tömt fält visar dagens text igen. Ny rad blir radbrytning, tom rad nytt stycke. Texterna skrivs separat på svenska och engelska.
-- **Bilder:** fältet visar bilden som syns i dag; tomt fält behåller den. En vald bild sparas som `s1_hero_image` (toppbilden) eller `s1_img_<elementnummer>`. Breakdance ger samma element samma nummer på båda språken, så WPML kopierar bildvalet till den engelska sidan. Den engelska startsidan har två kort (Swimming, Amerikansk fotboll) som inte finns på svenska; de bilderna väljs på den engelska sidan.
-- **Ingår inte:** sidhuvud, meny och sidfot, block som delas mellan flera sidor (omdömen, idrottarslidern, faktablocket), idrottarkorten och sektionen på Juniorutveckling som ersätts av Golf/Tennis-korten. Formulärens fält ingår inte heller.
+- **Bilder:** fältet visar bilden som syns i dag; tomt fält behåller den. En vald bild sparas som `s1_hero_image` (toppbilden) eller `s1_img_<elementnummer>`. Breakdance ger samma element samma nummer på båda språken, så WPML kopierar bildvalet till den engelska sidan. Den engelska startsidan har två kort (Swimming, Amerikansk fotboll) som inte finns på svenska; de bilderna väljs på den engelska sidan. Temats egna bakgrundsbilder är redan mörka; en vald bakgrundsbild får därför en mörk gradient ovanpå (starkast under menyn på toppbilden) så att vit text och menyn syns även på ljusa foton.
+- **Ingår inte här:** sidhuvud, meny och sidfot (se nästa avsnitt), block som delas mellan flera sidor (omdömen, idrottarslidern, faktablocket), idrottarkorten och sektionen på Juniorutveckling som ersätts av Golf/Tennis-korten. Formulärens fält ingår inte heller.
 
 Fälten registreras bara för sidan som redigeras. Sidorna öppnas i den klassiska redigeraren. Kod: `inc/page-content.php`.
+
+## Meny och sidfot
+
+Menyn högst upp och sidfoten längst ner redigeras under **Meny och sidfot** i wp-admin (eget menyval, kräver rätten att redigera sidor), med en flik för svenska och en för engelska. De gäller alla sidor på språket, även Development-sidorna.
+
+- **Menyn:** rader med text, länk och nivå. En rad med nivån *Undermeny* hamnar i rullgardinen under huvudraden ovanför (som Collegerekrytering under Våra tjänster). Rader kan läggas till, flyttas och tas bort. Knappen i menyn (Ansök nu) har egen text och länk.
+- **Sidfoten:** rutan överst (rubrik i två delar, knapptext, knappens länk), de två länkkolumnerna (rubrik och länkar), sociala medier (en adress per tjänst; tomt fält visas inte) och raden längst ner.
+
+Standardinnehållet läses från startsidans ögonblicksbild för språket. Det som sparas lagras i alternativen `s1_site_parts_sv` och `s1_site_parts_en`, och **Återställ till ursprunget** tar bort det. Bara texter och länkar skrivs in i den befintliga markeringen, så utseendet ändras inte. Kod: `inc/site-parts.php` (anropas från `s1_prepare_snapshot_html`).
 
 ## Filtret på Våra idrottare
 
@@ -61,6 +70,6 @@ Engelska sidor visar bara engelska event och engelska Development-sidor. Allt ny
 - Jämför samtliga 18 sidversioner vid dator- och mobilbredd och rätta varje skillnad.
 - Testa navigation, karuseller, språkväxling och formulär i en WordPress stagingmiljö med WPML aktivt och Breakdance avstängt.
 - Flytta övriga sidors text och bilder från statiska ögonblicksbilder till redigerbara WordPress-fält eller block utan att ändra utseendet. I nuläget är bara idrottarkorten dynamiska.
-- Sociala länkar i sidfoten är avsiktligt dolda tills riktiga profiladresser finns.
+- Sociala länkar i sidfoten visas när adresser fylls i under Meny och sidfot.
 
 Aktivera inte temat på produktionssajten förrän dessa punkter är klara.
