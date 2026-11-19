@@ -576,6 +576,7 @@ function s1_page_content_fields(array $entry): array {
             ];
         }
     }
+    if (function_exists('s1_team_fields')) $fields = array_merge($fields, s1_team_fields($entry, $prefix, s1_page_content_admin_post_id()));
     return $fields;
 }
 

@@ -4,6 +4,7 @@ require_once get_template_directory() . '/inc/snapshot.php';
 require_once get_template_directory() . '/inc/athletes.php';
 require_once get_template_directory() . '/inc/development.php';
 require_once get_template_directory() . '/inc/page-content.php';
+require_once get_template_directory() . '/inc/team.php';
 require_once get_template_directory() . '/inc/site-parts.php';
 add_action('after_setup_theme', function () {
     add_theme_support('title-tag');

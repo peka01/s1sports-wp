@@ -33,12 +33,16 @@ Sidorna som bygger på ögonblicksbilder (Start, Juniorutveckling, Om oss, Våra
 
 Fälten registreras bara för sidan som redigeras. Sidorna öppnas i den klassiska redigeraren. Kod: `inc/page-content.php`.
 
+## Vårt team på Om oss
+
+Teamsektionen på Om oss och About us är dold i Breakdance men redigeras i fliken **Vårt team** i rutan Innehåll på sidan: rubrik och för varje person foto, namn, roll och text, plus två platser för nya personer. Inget syns för besökare förrän **Visa teamet på sajten** slås på; inloggade redaktörer ser teamet med `?s1_team_preview=1` (länken finns i fliken). Fotot blir kortets bakgrund med en mörk gradient nertill. Maximilian och Ludvig var dolda var för sig i Breakdance; deras **Visa personen** är därför avslaget från början. Meta: `s1_team_show`, `s1_team_heading`, `s1_team_<n>_show/_image/_name/_role/_text`. Kod: `inc/team.php`.
+
 ## Meny och sidfot
 
 Menyn högst upp och sidfoten längst ner redigeras under **Meny och sidfot** i wp-admin (eget menyval, kräver rätten att redigera sidor), med en flik för svenska och en för engelska. De gäller alla sidor på språket, även Development-sidorna.
 
 - **Menyn:** rader med text, länk och nivå. En rad med nivån *Undermeny* hamnar i rullgardinen under huvudraden ovanför (som Collegerekrytering under Våra tjänster). Rader kan läggas till, flyttas och tas bort. Knappen i menyn (Ansök nu) har egen text och länk.
-- **Sidfoten:** rutan överst (rubrik i två delar, knapptext, knappens länk), de två länkkolumnerna (rubrik och länkar), sociala medier (en adress per tjänst; tomt fält visas inte) och raden längst ner.
+- **Sidfoten:** rutan överst (rubrik i två delar, knapptext, knappens länk, och sidor där rutan inte visas; från början Kontakt/Contact), de två länkkolumnerna (rubrik och länkar), sociala medier (en adress per tjänst; tomt fält visas inte) och raden längst ner.
 
 Standardinnehållet läses från startsidans ögonblicksbild för språket. Det som sparas lagras i alternativen `s1_site_parts_sv` och `s1_site_parts_en`, och **Återställ till ursprunget** tar bort det. Bara texter och länkar skrivs in i den befintliga markeringen, så utseendet ändras inte. Kod: `inc/site-parts.php` (anropas från `s1_prepare_snapshot_html`).
 
@@ -52,7 +56,7 @@ Allt i den här delen redigeras i wp-admin.
 
 - **Event:** menyn **Event** (från insticksprogrammet `s1sports-content`). Eventets namn skrivs i titelfältet och resten i ett formulär under det, i samma ordning som besökaren ser det: **1. Listan** (sport, typ, eventbild, datum, plats, kort beskrivning), **2. Rutan** (avgift, ålder, sista anmälan, om eventet, det här ingår), **3. Efter eventet** (resultat och höjdpunkter) och **4. Bilder** (rubrik och bildspel). Ett event flyttas automatiskt till **Tidigare** dagen efter slutdatumet. Eventen visas som en lista med datum, text och bild; hela raden öppnar eventets ruta.
 - **Bilder:** fliken **4. Bilder** på varje event. Välj bilder ur mediabiblioteket, dra för att ändra ordning och skriv en egen rubrik om du vill (t.ex. "Om arenan"). Bilderna visas som ett bildspel med miniatyrer i eventets ruta: efter texterna: för tidigare event efter "Resultat och höjdpunkter", för kommande event efter "Det här ingår". Eventraden visar eventbilden (eller första bilden i bildspelet) och antalet bilder. Bildtexten hämtas från bildens bildtext i mediabiblioteket.
-- **Development-sidor:** vanliga sidor med mallen **Development (sport)**. Sidan redigeras i ett formulär direkt under titeln, i samma ordning som sidan: **1. Toppen** (toppbild, rubrik, ingress), **2. Event** (sport och rubrik ovanför eventen), **3. Avslutning** (bild, rubrik, text, knapp) och **4. Kort på Juniorutveckling** (egen kortbild, rubriker och text). Tomma fält visar den grå texten. Sidor med mallen öppnas i den klassiska redigeraren; en ny sida får formuläret efter att mallen valts och sidan sparats.
+- **Development-sidor:** vanliga sidor med mallen **Development (sport)**. Sidan redigeras i ett formulär direkt under titeln, i samma ordning som sidan: **1. Toppen** (toppbild, rubrik, ingress), **2. Event** (sport och rubrik ovanför eventen), **3. Avslutning** (bild, rubrik, text, knapp som leder till Kontakta oss) och **4. Kort på Juniorutveckling** (egen kortbild, rubriker och text). Tomma fält visar den grå texten. Sidor med mallen öppnas i den klassiska redigeraren; en ny sida får formuläret efter att mallen valts och sidan sparats.
 - **Juniorutveckling:** sektionen under toppbilden visar ett kort per publicerad Development-sida. Rubrik och text redigeras i fälten på sidan Juniorutveckling.
 - **Anmäl intresse** leder till Boka möte med eventets namn och sport ifyllda i formuläret.
 

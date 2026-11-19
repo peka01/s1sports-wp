@@ -27,6 +27,7 @@ function s1_site_parts_defaults(string $lang): array {
     $lang = $lang === 'en' ? 'en' : 'sv';
     if (isset($cache[$lang])) return $cache[$lang];
     $parts = ['menu' => [], 'button' => ['label' => '', 'url' => ''], 'cta' => ['first' => '', 'second' => '', 'label' => '', 'url' => ''],
+        'cta_hide' => [$lang === 'en' ? 'contact' : 'kontakt'],
         'columns' => [], 'social' => array_fill_keys(array_keys(S1_SOCIAL), ''), 'copyright' => ''];
     $file = get_template_directory() . '/snapshots/' . $lang . '-home.html';
     $html = is_readable($file) ? (string) file_get_contents($file) : '';
@@ -101,7 +102,22 @@ function s1_render_site_parts(string $html, string $locale): string {
     $html = s1_render_site_menu($html, $parts, $locale);
     $start = s1_site_parts_footer_start($html);
     if ($start === null) return $html;
-    return substr($html, 0, $start) . s1_render_site_footer(substr($html, $start), $parts);
+    return substr($html, 0, $start) . s1_render_site_footer(substr($html, $start), $parts, (string) get_post_field('post_name', get_queried_object_id()));
+}
+
+/** The pages of a language that have the footer, for the "Visa inte rutan på" choice: slug => title. */
+function s1_site_parts_pages(string $lang): array {
+    $slugs = [];
+    foreach (s1_snapshot_manifest() as $item) {
+        if (($item['locale'] ?? '') !== $lang) continue;
+        $slugs[] = ($lang === 'sv' && $item['slug'] === 'home') ? 'start' : (string) $item['slug'];
+    }
+    $pages = [];
+    foreach (get_posts(['post_type' => 'page', 'post_status' => 'any', 'post_name__in' => $slugs, 'numberposts' => -1, 'suppress_filters' => true, 'orderby' => 'title', 'order' => 'ASC']) as $page) {
+        $pages[$page->post_name] = $page->post_title;
+    }
+    foreach ($slugs as $slug) $pages[$slug] ??= $slug;
+    return $pages;
 }
 
 function s1_render_site_menu(string $html, array $parts, string $locale): string {
@@ -149,8 +165,13 @@ function s1_render_site_menu(string $html, array $parts, string $locale): string
     }, $html, 1);
 }
 
-function s1_render_site_footer(string $footer, array $parts): string {
+function s1_render_site_footer(string $footer, array $parts, string $slug = ''): string {
     $put = static fn(string $text): string => str_replace(['\\', '$'], ['\\\\', '\\$'], esc_html($text));
+
+    // The box at the top is left out on the pages chosen in wp-admin (from the start: Kontakt / Contact).
+    if ($slug !== '' && in_array($slug, (array) ($parts['cta_hide'] ?? []), true)) {
+        $footer = (string) preg_replace('~<div class="bde-div-108-\d+ bde-div">\s*<h\d class="bde-dual-heading-108-\d+[^>]*>[\s\S]*?</h\d>\s*<div class="bde-button-108-\d+ bde-button">[\s\S]*?</a>\s*</div>\s*</div>~', '', $footer, 1);
+    }
 
     // The box at the top: heading in two parts and a button.
     $footer = (string) preg_replace_callback('~(<h\d class="bde-dual-heading-108-\d+[^"]*"[^>]*>)([\s\S]*?)(</h\d>)~', static function (array $m) use ($parts): string {
@@ -261,6 +282,12 @@ function s1_site_parts_screen(): void {
                     <p><label>Rubrik, kursiv del<br><input type="text" class="large-text" name="cta[second]" value="<?php echo esc_attr($parts['cta']['second']); ?>"></label></p>
                     <p><label>Knapptext<br><input type="text" class="regular-text" name="cta[label]" value="<?php echo esc_attr($parts['cta']['label']); ?>"></label></p>
                     <p><label>Knappens länk<br><input type="text" class="regular-text code" name="cta[url]" value="<?php echo esc_attr($parts['cta']['url']); ?>"></label></p>
+                    <fieldset><legend>Visa inte rutan på de här sidorna</legend>
+                    <input type="hidden" name="cta_hide[]" value="">
+                    <?php foreach (s1_site_parts_pages($lang) as $page_slug => $title): ?>
+                        <label style="display:inline-block;margin:4px 16px 0 0"><input type="checkbox" name="cta_hide[]" value="<?php echo esc_attr($page_slug); ?>"<?php checked(in_array($page_slug, (array) $parts['cta_hide'], true)); ?>> <?php echo esc_html($title); ?></label>
+                    <?php endforeach; ?>
+                    </fieldset>
                 </td></tr>
                 <?php foreach ($parts['columns'] as $n => $column): ?>
                 <tr><th scope="row">Kolumn <?php echo (int) $n + 1; ?></th><td>
@@ -351,6 +378,7 @@ add_action('admin_post_s1_save_site_parts', function (): void {
             'first' => $text($post['cta']['first'] ?? ''), 'second' => $text($post['cta']['second'] ?? ''),
             'label' => $text($post['cta']['label'] ?? ''), 'url' => $url($post['cta']['url'] ?? ''),
         ],
+        'cta_hide' => array_values(array_filter(array_map('sanitize_title', (array) ($post['cta_hide'] ?? [])))),
         'columns' => [],
         'social' => [],
         'copyright' => $text($post['copyright'] ?? ''),
