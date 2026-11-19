@@ -5,7 +5,7 @@
  * person, two extra places for new people) and switch it on with "Visa teamet på sajten".
  * Signed-in editors can look at it before that with ?s1_team_preview=1.
  *
- * Meta: s1_team_show, s1_team_heading, s1_team_<n>_show/_image/_name/_role/_text (n = 1..8).
+ * Meta: s1_team_show, s1_team_heading_b/_i, s1_team_<n>_show/_image/_name/_role/_text (n = 1..8).
  * Images are copied to the English page by WPML; the rest is per language.
  */
 defined('ABSPATH') || exit;
@@ -26,10 +26,15 @@ function s1_snapshot_team(array $entry): ?array {
     $card = '~<div class="(bde-div-' . $pid . '-\d+) bde-div">\s*<div class="section-background-overlay bde-section-background-overlay"></div>\s*'
         . '<div class="bde-text-' . $pid . '-\d+ bde-text">([^<]*)</div>\s*<div class="bde-text-' . $pid . '-\d+ bde-text">([^<]*)</div>\s*<div class="bde-text-' . $pid . '-\d+ bde-text">([^<]*)</div>\s*</div>~';
     if (!preg_match_all($card, substr($body, (int) $heading[0][1]), $cards, PREG_SET_ORDER)) return $cache[$file] = null;
+    // The heading is shown like the page's other headings ("Vår Vision"): bold first word, italic rest.
+    $words = preg_split('/\s+/u', s1_snapshot_plain($heading[2][0]), 2);
+    $template = preg_match('~<h2 class="(bde-dual-heading-' . $pid . '-\d+)[ "]~', $body, $dual) ? $dual[1] : '';
     return $cache[$file] = [
         'section' => end($sections[1]),
         'heading_class' => $heading[1][0],
-        'heading' => s1_snapshot_plain($heading[2][0]),
+        'heading_template' => $template,
+        'heading_b' => mb_convert_case(mb_strtolower($words[0] ?? ''), MB_CASE_TITLE, 'UTF-8'),
+        'heading_i' => mb_strtolower($words[1] ?? ''),
         'card_pattern' => $card,
         'cards' => array_map(static fn(array $c): array => [
             'html' => $c[0], 'class' => $c[1],
@@ -113,8 +118,12 @@ function s1_apply_page_team(string $html, int $post_id, array $entry): string {
     }
     $html = substr_replace($html, $cards, $first, $end - $first);
 
-    $heading = s1_team_value($post_id, 's1_team_heading', $team['heading']);
-    $html = (string) preg_replace_callback('~(<h2 class="' . preg_quote($team['heading_class'], '~') . ' bde-heading">)[\s\S]*?(</h2>)~', static fn(array $m): string => $m[1] . ' ' . esc_html($heading) . ' ' . $m[2], $html, 1);
+    $bold = s1_team_value($post_id, 's1_team_heading_b', $team['heading_b']);
+    $italic = s1_team_value($post_id, 's1_team_heading_i', $team['heading_i']);
+    $new = $team['heading_template'] !== ''
+        ? '<h2 class="' . esc_attr($team['heading_template']) . ' bde-dual-heading"> <span data-style="primary" class="dual-heading--primary ">' . esc_html($bold) . '</span> <span data-style="secondary" class="dual-heading--secondary ">' . esc_html($italic) . '</span> </h2>'
+        : '<h2 class="' . esc_attr($team['heading_class']) . ' bde-heading"> ' . esc_html(trim($bold . ' ' . $italic)) . ' </h2>';
+    $html = (string) preg_replace_callback('~<h2 class="' . preg_quote($team['heading_class'], '~') . ' bde-heading">[\s\S]*?</h2>~', static fn(): string => $new, $html, 1);
 
     $style = '<style id="s1-team">.breakdance .' . $team['section'] . '.bde-section{display:block!important}'
         . implode('', array_map(static fn(string $class): string => '.breakdance .' . $team['section'] . ' .' . $class . '.bde-div{display:flex!important}', array_keys($unhide)))
@@ -142,7 +151,8 @@ function s1_team_fields(array $entry, string $prefix, int $post_id): array {
                 . '<br>Fotot blir bakgrund i personens kort och mörkas nertill så att texten syns. Stående foton passar bäst.'],
         ['key' => $prefix . 's1_team_show', 'name' => 's1_team_show', 'label' => 'Visa teamet på sajten', 'type' => 'true_false',
             'ui' => 1, 'ui_on_text' => 'Ja', 'ui_off_text' => 'Nej', 'default_value' => 0, 'wpml_cf_preferences' => 2],
-        $text('s1_team_heading', 'Rubrik', $team['heading']),
+        $text('s1_team_heading_b', 'Rubrik, fet del', $team['heading_b'], ['wrapper' => ['width' => '50']]),
+        $text('s1_team_heading_i', 'Rubrik, kursiv del', $team['heading_i'], ['wrapper' => ['width' => '50']]),
     ];
     for ($n = 1; $n <= S1_TEAM_SLOTS; $n++) {
         $card = $team['cards'][$n - 1] ?? null;

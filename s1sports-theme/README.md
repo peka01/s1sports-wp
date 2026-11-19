@@ -39,7 +39,7 @@ Guiden för Emma ligger i wp-admin under **Instruktioner** (`/wp-admin/admin.php
 
 ## Vårt team på Om oss
 
-Teamsektionen på Om oss och About us är dold i Breakdance men redigeras i fliken **Vårt team** i rutan Innehåll på sidan: rubrik och för varje person foto, namn, roll och text, plus två platser för nya personer. Inget syns för besökare förrän **Visa teamet på sajten** slås på; inloggade redaktörer ser teamet med `?s1_team_preview=1` (länken finns i fliken). Fotot blir kortets bakgrund med en mörk gradient nertill. Maximilian och Ludvig var dolda var för sig i Breakdance; deras **Visa personen** är därför avslaget från början. Meta: `s1_team_show`, `s1_team_heading`, `s1_team_<n>_show/_image/_name/_role/_text`. Kod: `inc/team.php`.
+Teamsektionen på Om oss och About us är dold i Breakdance men redigeras i fliken **Vårt team** i rutan Innehåll på sidan: rubrik och för varje person foto, namn, roll och text, plus två platser för nya personer. Inget syns för besökare förrän **Visa teamet på sajten** slås på; inloggade redaktörer ser teamet med `?s1_team_preview=1` (länken finns i fliken). Fotot blir kortets bakgrund med en mörk gradient nertill. Maximilian och Ludvig var dolda var för sig i Breakdance; deras **Visa personen** är därför avslaget från början. Meta: `s1_team_show`, `s1_team_heading_b/_i`, `s1_team_<n>_show/_image/_name/_role/_text`. Kod: `inc/team.php`.
 
 ## Meny och sidfot
 
