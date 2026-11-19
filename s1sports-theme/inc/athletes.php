@@ -116,7 +116,7 @@ function s1a_icon(string $name): string {
 function s1_athlete_filter_html(array $posts): string {
     $sports = [
         '' => s1_text('Alla', 'All'),
-        'fotboll' => s1_text('Fotboll', 'Football'),
+        'fotboll' => s1_text('Fotboll', 'Soccer'),
         'golf' => 'Golf',
         'tennis' => 'Tennis',
         'friidrott' => s1_text('Friidrott', 'Athletics'),

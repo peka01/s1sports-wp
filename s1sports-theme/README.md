@@ -20,6 +20,10 @@ Installera och aktivera även insticksprogrammet `s1sports-content` och ACF. Den
 
 `s1sports-content/wpml-config.xml` anger att `atleter` ska översättas, att idrott och college/status ska översättas och att startsidesmarkering och ordning ska kopieras mellan språken. Koppla befintliga svenska och engelska profiler som översättningar i WPML. WPML har inte kunnat testas i den lokala installationen eftersom licensierad WPML-kod inte finns där.
 
+## Toppbild på de övriga sidorna
+
+Sidorna som bygger på ögonblicksbilder (Start, Juniorutveckling, Om oss, Våra tjänster, Collegerekrytering, Professionell rådgivning m.fl., på båda språken) har fältet **Toppbild** i wp-admin. En vald bild ersätter bakgrundsbilden i sidans första sektion; tomt fält behåller bilden från temats CSS. Sidorna öppnas i den klassiska redigeraren eftersom deras texter ligger i temat. Kod: `inc/page-hero.php`.
+
 ## Filtret på Våra idrottare
 
 Ovanför idrottarna finns knappar för sport (Alla, Fotboll, Golf, Tennis, Friidrott) och en rullista för år och status. Rullistan läser fältet **Skola** på varje idrottare: "College Recruit 2027" blir **Åker till USA 2027**, och ett riktigt skolnamn räknas som **Signerade med skola**. Nya år dyker upp i listan av sig själva. Sporten **friidrott** läggs till i idrottarnas sportval av insticksprogrammet (`acf/load_field` på fältet `sport`).

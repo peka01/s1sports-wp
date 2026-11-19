@@ -106,6 +106,7 @@ add_action('acf/init', function (): void {
                     'placeholder' => 'Följ våra kommande läger och tävlingsresor, och se vad vi har gjort tidigare. Välj din sport.'],
             ], []),
             'location' => $junior_locations,
+            'menu_order' => 1,
             'position' => 'normal',
             'style' => 'default',
             'active' => true,
