@@ -358,7 +358,7 @@ function s1_apply_page_images(string $html, int $post_id, array $entry): string 
             // The theme's own background images are already darkened so the white menu and texts stand out.
             // A chosen photo gets the same effect from a dark gradient on top: strongest under the menu.
             $shade = $spot['key'] === 's1_hero_image'
-                ? 'linear-gradient(180deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,.4) 30%,rgba(0,0,0,.4) 70%,rgba(0,0,0,.65) 100%)'
+                ? 'linear-gradient(180deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.75) 18%,rgba(0,0,0,.55) 40%,rgba(0,0,0,.5) 70%,rgba(0,0,0,.75) 100%)'
                 : 'linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45))';
             $base = (string) preg_replace('/-\d+-\d+$/', '', $spot['class']);
             $css .= '.breakdance .' . $spot['class'] . '.' . $base . '{background-image:' . $shade . ',url("' . esc_url($url) . '")!important}';
