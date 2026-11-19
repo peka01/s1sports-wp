@@ -351,9 +351,14 @@ function s1_apply_page_images(string $html, int $post_id, array $entry): string 
     $css = '';
     foreach (s1_snapshot_images($entry) as $spot) {
         $image_id = (int) get_post_meta($post_id, $spot['key'], true);
-        if ($image_id <= 0) continue;
-        $url = wp_get_attachment_image_url($image_id, 'full');
-        if (!$url) continue;
+        $url = $image_id > 0 ? wp_get_attachment_image_url($image_id, 'full') : false;
+        if (!$url) {
+            // The theme's own top image: darken only the strip under the menu, the rest looks as before.
+            if ($spot['key'] === 's1_hero_image' && $spot['type'] === 'bg' && $spot['url'] !== '') {
+                $css .= '.breakdance .' . $spot['class'] . '.bde-section{background-image:linear-gradient(180deg,rgba(0,0,0,.8) 0%,rgba(0,0,0,.45) 18%,rgba(0,0,0,0) 40%),url("' . esc_url($spot['url']) . '")!important}';
+            }
+            continue;
+        }
         if ($spot['type'] === 'bg') {
             // The theme's own background images are already darkened so the white menu and texts stand out.
             // A chosen photo gets the same effect from a dark gradient on top: strongest under the menu.
