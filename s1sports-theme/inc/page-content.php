@@ -225,7 +225,8 @@ function s1_snapshot_images(array $entry): array {
     foreach ($images as $m) {
         $spots[$m[1][0]] = ['pos' => $m[0][1], 'type' => 'img', 'class' => $m[1][0], 'url' => html_entity_decode($m[2][0])];
     }
-    preg_match_all('/class="(bde-[a-z0-9]+-\d+-\d+)[ "]/', $body, $elements, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+    // Element names can have a hyphen of their own, e.g. bde-container-link-498-122 (the service cards).
+    preg_match_all('/class="(bde-[a-z0-9]+(?:-[a-z][a-z0-9]*)*-\d+-\d+)[ "]/', $body, $elements, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
     foreach ($elements as $m) {
         $class = $m[1][0];
         if (isset($spots[$class]) || strpos($class, 'bde-image2-') === 0) continue;
