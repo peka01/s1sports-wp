@@ -27,7 +27,7 @@ function s1_site_parts_defaults(string $lang): array {
     $lang = $lang === 'en' ? 'en' : 'sv';
     if (isset($cache[$lang])) return $cache[$lang];
     $parts = ['menu' => [], 'button' => ['label' => '', 'url' => ''], 'cta' => ['first' => '', 'second' => '', 'label' => '', 'url' => ''],
-        'cta_hide' => [$lang === 'en' ? 'contact' : 'kontakt'],
+        'cta_hide' => [$lang === 'en' ? 'book-a-meeting' : 'boka-mote'],
         'columns' => [], 'social' => array_fill_keys(array_keys(S1_SOCIAL), ''), 'copyright' => ''];
     $file = get_template_directory() . '/snapshots/' . $lang . '-home.html';
     $html = is_readable($file) ? (string) file_get_contents($file) : '';
@@ -168,7 +168,7 @@ function s1_render_site_menu(string $html, array $parts, string $locale): string
 function s1_render_site_footer(string $footer, array $parts, string $slug = ''): string {
     $put = static fn(string $text): string => str_replace(['\\', '$'], ['\\\\', '\\$'], esc_html($text));
 
-    // The box at the top is left out on the pages chosen in wp-admin (from the start: Kontakt / Contact).
+    // The box at the top is left out on the pages chosen in wp-admin (from the start: the contact form page).
     if ($slug !== '' && in_array($slug, (array) ($parts['cta_hide'] ?? []), true)) {
         $footer = (string) preg_replace('~<div class="bde-div-108-\d+ bde-div">\s*<h\d class="bde-dual-heading-108-\d+[^>]*>[\s\S]*?</h\d>\s*<div class="bde-button-108-\d+ bde-button">[\s\S]*?</a>\s*</div>\s*</div>~', '', $footer, 1);
     }

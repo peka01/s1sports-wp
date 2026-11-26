@@ -88,9 +88,32 @@ function s1_prepare_snapshot_html(string $html, string $locale): string {
         $form_attributes = ' data-s1-contact="1" data-s1-endpoint="' . esc_url(admin_url('admin-ajax.php')) . '" data-s1-nonce="' . esc_attr(wp_create_nonce('s1_contact')) . '"';
         $html = preg_replace('/<form\b/i', '<form' . $form_attributes, $html, 1);
         $html = s1_prefill_booking_form($html);
+        $html = s1_link_contact_mail($html);
     }
     return $html;
 }
+
+/** The line under the form ("Vill du hellre mejla? …"): the e-mail address in it becomes a link. */
+function s1_link_contact_mail(string $html): string {
+    return (string) preg_replace_callback('~(<div class="[^"]*\bs1-contact-mail\b[^"]*"[^>]*>)([\s\S]*?)(</div>)~', static function (array $m): string {
+        if (stripos($m[2], '<a ') !== false) return $m[0];
+        $text = (string) preg_replace_callback('/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/', static fn(array $e): string => '<a href="mailto:' . esc_attr($e[0]) . '">' . $e[0] . '</a>', $m[2]);
+        return $m[1] . $text . $m[3];
+    }, $html, 1);
+}
+
+/**
+ * Kontakt / Contact was merged into the form page (theme 0.22.0): the old address sends visitors
+ * on to Boka möte / Book a meeting, so links and bookmarks keep working.
+ */
+add_action('template_redirect', function (): void {
+    if (!is_page(['kontakt', 'contact'])) return;
+    $slug = (string) get_post_field('post_name', get_queried_object_id());
+    $target = home_url($slug === 'contact' ? '/book-a-meeting/' : '/boka-mote/');
+    $query = (string) ($_SERVER['QUERY_STRING'] ?? '');
+    wp_safe_redirect($query !== '' ? $target . '?' . $query : $target, 301);
+    exit;
+});
 
 /**
  * "Anmäl intresse" on an event links to the booking page with ?s1_event=…&s1_sport=…;

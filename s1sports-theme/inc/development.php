@@ -349,7 +349,7 @@ function s1_development_main(int $post_id): string {
         . '<p class="s1d-cta__text">' . esc_html(s1_dev_meta($post_id, 's1_dev_cta_text', $is_golf
             ? s1_text('Berätta vad du siktar på, så hjälper vi dig att hitta rätt tävling eller läger.', 'Tell us what you are aiming for and we will help you find the right competition or camp.')
             : s1_text('Berätta vad du siktar på, så hjälper vi dig att hitta rätt turnering eller läger.', 'Tell us what you are aiming for and we will help you find the right tournament or camp.'))) . '</p>'
-        . '<a class="s1d-btn s1d-btn--light" href="' . esc_url(home_url(s1_lang() === 'en' ? '/contact/' : '/kontakt/')) . '">' . esc_html(s1_dev_meta($post_id, 's1_dev_cta_button', s1_text('Kontakta oss', 'Contact us'))) . s1d_icon('arrow-up-right', 16) . '</a>'
+        . '<a class="s1d-btn s1d-btn--light" href="' . esc_url(s1_booking_url()) . '">' . esc_html(s1_dev_meta($post_id, 's1_dev_cta_button', s1_text('Kontakta oss', 'Contact us'))) . s1d_icon('arrow-up-right', 16) . '</a>'
         . '</div></div></section>';
 
     return $out . '</main>';
@@ -453,7 +453,7 @@ function s1_development_event_dialog(array $event, int $fallback_image, string $
         }
         $body .= $gallery;
         $body .= '<div class="s1d-modal__note"><p>' . esc_html(s1_text('Det här eventet har redan varit. Vill du vara med nästa gång?', 'This event has already taken place. Want to join next time?')) . '</p>'
-            . '<a class="s1d-btn s1d-btn--light" href="' . esc_url(home_url(s1_lang() === 'en' ? '/contact/' : '/kontakt/')) . '">' . esc_html(s1_text('Kontakta oss', 'Contact us')) . '</a></div>';
+            . '<a class="s1d-btn s1d-btn--light" href="' . esc_url(s1_booking_url()) . '">' . esc_html(s1_text('Kontakta oss', 'Contact us')) . '</a></div>';
     } else {
         if ($event['includes']) {
             $body .= '<div class="s1d-modal__section"><h3>' . esc_html(s1_text('Det här ingår', "What's included")) . '</h3><ul class="s1d-includes">';
@@ -463,7 +463,7 @@ function s1_development_event_dialog(array $event, int $fallback_image, string $
         $body .= $gallery;
         $body .= '<div class="s1d-modal__actions">'
             . '<a class="s1d-btn s1d-btn--light" href="' . esc_url(s1_booking_url(['s1_event' => $event['title'] . ($event['dates'] !== '' ? ' (' . $event['dates'] . ')' : ''), 's1_sport' => $sport_name])) . '">' . esc_html(s1_text('Anmäl intresse', 'Register interest')) . s1d_icon('arrow-up-right', 16) . '</a>'
-            . '<a class="s1d-btn s1d-btn--outline" href="' . esc_url(home_url(s1_lang() === 'en' ? '/contact/' : '/kontakt/')) . '">' . esc_html(s1_text('Ställ en fråga', 'Ask a question')) . '</a>'
+            . '<a class="s1d-btn s1d-btn--outline" href="' . esc_url(s1_booking_url()) . '">' . esc_html(s1_text('Ställ en fråga', 'Ask a question')) . '</a>'
             . '</div>';
     }
     return '<dialog class="s1d-modal" id="' . esc_attr($id) . '" aria-labelledby="' . esc_attr($id) . '-title"><div class="s1d-modal__panel">'

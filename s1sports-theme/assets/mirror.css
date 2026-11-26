@@ -66,3 +66,7 @@
 @media(max-width:600px){.s1a-chip{padding:0 14px 0 12px;font-size:14px}.s1a-select,.s1a-select select{width:100%}}
 /* Våra tjänster / Our services: the two service cards side by side get the same heading height and the button at the bottom, so texts and buttons line up even when one heading has two lines (Professionell Rådgivning) and the other one. */
 @media(min-width:768px){.breakdance .bde-grid-528-139>.bde-div>.bde-text:first-child,.breakdance .bde-grid-531-139>.bde-div>.bde-text:first-child{min-height:6.6rem}.breakdance .bde-grid-528-139>.bde-div>.bde-button,.breakdance .bde-grid-531-139>.bde-div>.bde-button{margin-top:auto}}
+/* Kontakta oss / Contact us (the form page): the e-mail line under the form, for those who prefer to write directly. */
+.breakdance .s1-contact-mail{margin-top:32px;text-align:center;color:#c7c7c7;font:300 16px/26px Roboto,sans-serif}
+.breakdance .s1-contact-mail a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.breakdance .s1-contact-mail a:hover{text-decoration-thickness:2px}
