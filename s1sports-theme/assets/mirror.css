@@ -70,3 +70,6 @@
 .breakdance .s1-contact-mail{margin-top:32px;text-align:center;color:#c7c7c7;font:300 16px/26px Roboto,sans-serif}
 .breakdance .s1-contact-mail a{color:#fff;text-decoration:underline;text-underline-offset:3px}
 .breakdance .s1-contact-mail a:hover{text-decoration-thickness:2px}
+/* Kontakta oss / Contact us: the heading section had a 450px minimum height with the text centred in it, which left a large empty gap above the form; the form now starts 3rem below the text. */
+.breakdance .bde-section-554-100 .section-container,.breakdance .bde-section-557-100 .section-container{min-height:0}
+.breakdance .bde-form-builder-554-106,.breakdance .bde-form-builder-557-106{margin-top:0}
